@@ -1,4 +1,5 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import FirstScreen from '../screens/FirstScreen';
 
 
 
@@ -8,9 +9,8 @@ const Stack = createNativeStackNavigator();
 
 const MainNavigator = () => {
     return (
-        <Stack.Navigator>
-            {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
-            {/* <Stack.Screen name="Details" component={DetailsScreen} /> */}
+        <Stack.Navigator initialRouteName='FirstScreen'>
+            <Stack.Screen name="FirstScreen" component={FirstScreen}/>
         </Stack.Navigator>
     )
 }
