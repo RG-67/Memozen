@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator();
 const MainNavigator = () => {
     return (
         <Stack.Navigator initialRouteName='FirstScreen'>
-            <Stack.Screen name="FirstScreen" component={FirstScreen}/>
+            <Stack.Screen name="FirstScreen" component={FirstScreen} options={{headerShown: false}}/>
         </Stack.Navigator>
     )
 }
