@@ -2,22 +2,38 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {FirstScreenGradient} from '../styles/GradientStyle';
 import Colors from '../styles/Colors';
 import Icon from 'react-native-vector-icons/FontAwesome6';
+import { useState } from "react";
 
 
 
 const FirstScreen = () => {
+
+    const [isVisible, setVisible] = useState(false);
+
+    const handleClick = (visibility) => {
+
+    }
+
     return (
-        <FirstScreenGradient>
-        <View style={styles.container}>
-            <Image source={require('../assets/images/get_start_image.png')}/>
-            <Text style={styles.title}>Task Management &{"\n"}To-Do List</Text>
-            <Text style={styles.text}>This productive tool is designed to help{"\n"}you better manage your task{"\n"}project-wise conveniently</Text>
-            <TouchableOpacity style={styles.buttonStyle}>
-                <Text style={styles.buttonText}>Let's Start</Text>
-                <Icon name="arrow-right-long" size={30} style={styles.iconStyle}/>
-            </TouchableOpacity>
+        <>
+        {isVisible ? (
+            <FirstScreenGradient>
+            <View style={styles.container}>
+                <Image source={require('../assets/images/get_start_image.png')}/>
+                <Text style={styles.title}>Task Management &{"\n"}To-Do List</Text>
+                <Text style={styles.text}>This productive tool is designed to help{"\n"}you better manage your task{"\n"}project-wise conveniently</Text>
+                <TouchableOpacity style={styles.buttonStyle} onPress={() => handleClick(true)}>
+                    <Text style={styles.buttonText}>Let's Start</Text>
+                    <Icon name="arrow-right-long" size={30} style={styles.iconStyle}/>
+                </TouchableOpacity>
+            </View>
+            </FirstScreenGradient>
+        ) : 
+        <View style={styles.secondContainer}>
+
         </View>
-        </FirstScreenGradient>
+        }
+        </>
     )
 }
 
@@ -67,6 +83,9 @@ const styles = StyleSheet.create({
         color: Colors.white, 
         right: 10, 
         position: 'absolute'
+    },
+    secondContainer: {
+        flex: 1
     }
 });
 
