@@ -8,9 +8,7 @@ import MainNavigator from "./navigation/MainNavigator";
 const App = () => {
     return(
         <GlobalProvider>
-            <NavigationContainer>
                 <MainNavigator/>
-            </NavigationContainer>
         </GlobalProvider>
     )
 }

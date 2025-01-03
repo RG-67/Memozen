@@ -4,7 +4,7 @@ import Colors from "../styles/Colors";
 
 
 
-const Login = () => {
+const Login = ({navigation}) => {
     return (
         <View style={styles.mainContainer}>
             <Text style={styles.title}>Lets Sign you in</Text>
@@ -18,7 +18,7 @@ const Login = () => {
             keyboardType='visible-password'
             style={styles.inputStyle}/>
             <Text style={styles.forgotPassStyle}>Forgot Password ?</Text>
-            <TouchableOpacity style={styles.loginBtnStyle}>
+            <TouchableOpacity style={styles.loginBtnStyle} onPress={() => navigation.navigate('TabNavigator')}>
                 <Text style={styles.btnTextStyle}>Sign in</Text>
             </TouchableOpacity>
             <View style={styles.orLine}>
