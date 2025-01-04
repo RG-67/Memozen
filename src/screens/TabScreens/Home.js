@@ -1,6 +1,9 @@
-import { Image, Pressable, StyleSheet, Text, View, ViewBase } from "react-native";
+import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CircularProgressBar from "../../components/CircularProgressbar";
+
 
 const Home = () => {
     return (
@@ -20,9 +23,16 @@ const Home = () => {
             </View>
 
             <View style={styles.cardContainer}>
-                <View>
+                <View style={{ justifyContent: 'space-between' }}>
                     <Text style={styles.textStyle}>Your today's task{"\n"}almost done!</Text>
+                    <TouchableOpacity style={styles.viewTaskBtnStyle}>
+                        <Text style={styles.taskText}>View Task</Text>
+                    </TouchableOpacity>
                 </View>
+                <CircularProgressBar percentage={85}/>
+                <Pressable style={styles.threeDotContainer}>
+                    <MIcon name="dots-horizontal" size={20} color={Colors.white}/>
+                </Pressable>
             </View>
 
         </View>
@@ -64,7 +74,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     notificationContainer: {
-        justifyContent: 'center'
+
     },
     notification: {
 
@@ -75,11 +85,46 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         borderRadius: 20,
         backgroundColor: Colors.colorPrimary,
-        minHeight: 140,
+        minHeight: 150,
         top: 10
     },
     textStyle: {
-
+        fontSize: 15,
+        fontWeight: '600',
+        top: 20,
+        left: 20,
+        color: Colors.white
+    },
+    viewTaskBtnStyle: {
+        width: 100,
+        height: 40,
+        backgroundColor: Colors.white,
+        justifyContent: 'center',
+        alignItems: 'center',
+        left: 20,
+        bottom: 20,
+        borderRadius: 15
+    },
+    taskText: {
+        fontWeight: 'bold',
+        fontSize: 15,
+        color: Colors.colorPrimary
+    },
+    threeDotContainer: {
+        width: 30,
+        height: 25,
+        backgroundColor: Colors.lightestPurple,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+        top: 20,
+        right: 15,
+        alignContent: 'center'
+    },
+    threeDotText: {
+        fontWeight: 'bold',
+        color: Colors.white,
+        alignSelf: 'center'
     }
 });
 
