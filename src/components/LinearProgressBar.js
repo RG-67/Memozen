@@ -2,19 +2,19 @@ import { StyleSheet, View } from "react-native"
 import Svg, { Circle, Line, Rect, Text } from "react-native-svg";
 import Colors from "../styles/Colors";
 
-const LinearProgressBar = ({ percentage }) => {
+const LinearProgressBar = ({ percentage, progressColor }) => {
 
     return (
         <View style={styles.container}>
-            <Svg width="100%" height={15}>
-                <Rect x="0" y="0" rx="10" ry="10" fill={Colors.black} />
+            <Svg width="100%" height={8}>
+                <Rect x="0" y="0" rx="5" ry="5" fill={Colors.white} width="100%" height="8" />
                 <Rect x="0"
                     y="0"
                     width={`${percentage}%`}
-                    height="15"
-                    rx="10"
-                    ry="10"
-                    fill={Colors.white}/>
+                    height="8"
+                    rx="5"
+                    ry="5"
+                    fill={progressColor}/>
             </Svg>
         </View>
     );

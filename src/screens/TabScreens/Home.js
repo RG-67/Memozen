@@ -12,15 +12,15 @@ import LinearProgressBar from "../../components/LinearProgressBar";
 const inProgressRenderItem = ({ item }) => (
     <Pressable onPress={() => { }}>
         <View style={{ backgroundColor: item.color, ...styles.inProgressItemContainer }}>
-            <View style={{ flexDirection: 'row', marginHorizontal: 10, justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ color: Colors.lightGrey, fontSize: 14, fontWeight: '500' }}>{item.type}</Text>
-                <View style={{ width: 25, height: 25, backgroundColor: Colors.lightestPurple, borderRadius: 8, justifyContent: 'center', alignItems: 'center' }}>
-                    <InProgressIcon name={item.imageName} size={12} style={{ alignSelf: 'center' , color: Colors.white}} />
+            <View style={styles.inPrView1}>
+                <Text style={styles.text1}>{item.type}</Text>
+                <View style={{backgroundColor: item.iconBgColor, ...styles.inIconBg}}>
+                    <InProgressIcon name={item.imageName} size={12} style={{color: item.icoColor, ...styles.inIcon}} />
                 </View>
             </View>
-            <Text style={{fontSize: 18, fontWeight: '600', color: Colors.black, marginHorizontal: 10}}>{item.description}</Text>
-            <View style={{marginHorizontal: 10}}>
-            <LinearProgressBar percentage={item.progress}/>
+            <Text style={styles.inDescription}>{item.description}</Text>
+            <View style={styles.linearProgressBg}>
+                <LinearProgressBar percentage={item.progress} progressColor={item.progressColor} />
             </View>
         </View>
     </Pressable>
@@ -65,9 +65,7 @@ const Home = () => {
                 data={ProgressItem}
                 horizontal={true}
                 keyExtractor={(item) => item.id}
-                renderItem={inProgressRenderItem}
-                ItemSeparatorComponent={() => <View style={styles.inProgressSeparator} />}
-            />
+                renderItem={inProgressRenderItem} />
 
         </View>
     )
@@ -188,12 +186,41 @@ const styles = StyleSheet.create({
         width: 220,
         height: 150,
         borderRadius: 15,
-        start: 10,
+        marginHorizontal: 10,
         top: 10,
         justifyContent: 'space-evenly'
     },
-    inProgressSeparator: {
-        width: 15
+    inPrView1: {
+        flexDirection: 'row', 
+        marginHorizontal: 10, 
+        justifyContent: 'space-between', 
+        alignItems: 'center'
+    },
+    text1: {
+        color: Colors.lightGrey, 
+        fontSize: 14, 
+        fontWeight: '500'
+    },
+    inIconBg: {
+        width: 25, 
+        height: 25, 
+        borderRadius: 8, 
+        justifyContent: 'center', 
+        alignItems: 'center'
+    },
+    inIcon: {
+        alignSelf: 'center'
+    },
+    inDescription: {
+        fontSize: 18, 
+        fontWeight: '600', 
+        color: Colors.black, 
+        marginHorizontal: 10, 
+        bottom: 10 
+    },
+    linearProgressBg: {
+        marginHorizontal: 10,
+        bottom: 15
     }
 });
 
