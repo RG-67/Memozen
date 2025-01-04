@@ -6,7 +6,8 @@ const Colors = {
     black: "#000000",
     lightGrey: "#808080",
     lightPurple: "#8764ff",
-    lightestPurple: "#9f85ed"
+    lightestPurple: "#9f85ed",
+    transPurple: "#eee9ff"
 }
 
 export default Colors;

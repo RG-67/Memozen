@@ -1,9 +1,30 @@
-import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CircularProgressBar from "../../components/CircularProgressbar";
+import ProgressItem from "../../SampleModel/InProgressData";
+import InProgressIcon from 'react-native-vector-icons/FontAwesome6'
+import LinearProgressBar from "../../components/LinearProgressBar";
 
+
+
+const inProgressRenderItem = ({ item }) => (
+    <Pressable onPress={() => { }}>
+        <View style={{ backgroundColor: item.color, ...styles.inProgressItemContainer }}>
+            <View style={{ flexDirection: 'row', marginHorizontal: 10, justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ color: Colors.lightGrey, fontSize: 14, fontWeight: '500' }}>{item.type}</Text>
+                <View style={{ width: 25, height: 25, backgroundColor: Colors.lightestPurple, borderRadius: 8, justifyContent: 'center', alignItems: 'center' }}>
+                    <InProgressIcon name={item.imageName} size={12} style={{ alignSelf: 'center' , color: Colors.white}} />
+                </View>
+            </View>
+            <Text style={{fontSize: 18, fontWeight: '600', color: Colors.black, marginHorizontal: 10}}>{item.description}</Text>
+            <View style={{marginHorizontal: 10}}>
+            <LinearProgressBar percentage={item.progress}/>
+            </View>
+        </View>
+    </Pressable>
+);
 
 const Home = () => {
     return (
@@ -29,11 +50,24 @@ const Home = () => {
                         <Text style={styles.taskText}>View Task</Text>
                     </TouchableOpacity>
                 </View>
-                <CircularProgressBar percentage={85}/>
+                <CircularProgressBar percentage={85} />
                 <Pressable style={styles.threeDotContainer}>
-                    <MIcon name="dots-horizontal" size={20} color={Colors.white}/>
+                    <MIcon name="dots-horizontal" size={20} color={Colors.white} />
                 </Pressable>
             </View>
+
+            <View style={styles.inProgressStyle}>
+                <Text style={styles.inProgress} ellipsizeMode="tail" numberOfLines={1}>In Progress</Text>
+                <Text style={styles.progressText}>6</Text>
+            </View>
+
+            <FlatList
+                data={ProgressItem}
+                horizontal={true}
+                keyExtractor={(item) => item.id}
+                renderItem={inProgressRenderItem}
+                ItemSeparatorComponent={() => <View style={styles.inProgressSeparator} />}
+            />
 
         </View>
     )
@@ -125,6 +159,41 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.white,
         alignSelf: 'center'
+    },
+    inProgressStyle: {
+        flexDirection: 'row',
+        marginHorizontal: 10,
+        marginTop: 20
+    },
+    inProgress: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    progressText: {
+        left: 5,
+        borderRadius: 30,
+        fontSize: 10,
+        backgroundColor: Colors.transPurple,
+        color: Colors.lightPurple,
+        alignSelf: 'center',
+        alignContent: 'center',
+        textAlign: 'center',
+        verticalAlign: 'middle',
+        width: 18,
+        height: 18,
+        fontWeight: 'bold',
+        top: 2
+    },
+    inProgressItemContainer: {
+        width: 220,
+        height: 150,
+        borderRadius: 15,
+        start: 10,
+        top: 10,
+        justifyContent: 'space-evenly'
+    },
+    inProgressSeparator: {
+        width: 15
     }
 });
 
