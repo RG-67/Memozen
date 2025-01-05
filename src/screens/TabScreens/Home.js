@@ -1,26 +1,46 @@
-import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import CircularProgressBar from "../../components/CircularProgressbar";
+import CircularProgressBar, { TaskProgressBar } from "../../components/CircularProgressbar";
 import ProgressItem from "../../SampleModel/InProgressData";
 import InProgressIcon from 'react-native-vector-icons/FontAwesome6'
 import LinearProgressBar from "../../components/LinearProgressBar";
+import taskGroupData from "../../SampleModel/TasksGroupData";
+import IOIcon from 'react-native-vector-icons/Ionicons';
 
 
 
 const inProgressRenderItem = ({ item }) => (
-    <Pressable onPress={() => { }}>
+    <Pressable onPress={() => { }} style={styles.inPrFlat}>
         <View style={{ backgroundColor: item.color, ...styles.inProgressItemContainer }}>
             <View style={styles.inPrView1}>
                 <Text style={styles.text1}>{item.type}</Text>
-                <View style={{backgroundColor: item.iconBgColor, ...styles.inIconBg}}>
-                    <InProgressIcon name={item.imageName} size={12} style={{color: item.icoColor, ...styles.inIcon}} />
+                <View style={{ backgroundColor: item.iconBgColor, ...styles.inIconBg }}>
+                    <InProgressIcon name={item.imageName} size={12} style={{ color: item.icoColor, ...styles.inIcon }} />
                 </View>
             </View>
             <Text style={styles.inDescription}>{item.description}</Text>
             <View style={styles.linearProgressBg}>
                 <LinearProgressBar percentage={item.progress} progressColor={item.progressColor} />
+            </View>
+        </View>
+    </Pressable>
+);
+
+
+const tasksGroupRenderItem = ({ item }) => (
+    <Pressable onPress={() => { }}>
+        <View style={styles.taskMainContainer}>
+            <View style={{ backgroundColor: item.iconBgColor, ...styles.taskIconBg }}>
+                <IOIcon name={item.iconName} size={25} color={item.iconColor} />
+            </View>
+            <View style={styles.taskTitleContainer}>
+                <Text style={styles.taskTitle}>{item.title}</Text>
+                <Text style={styles.taskDescription}>{item.totaltasks}</Text>
+            </View>
+            <View style={{ alignSelf: 'flex-end' }}>
+                <TaskProgressBar percentage={item.progress} progressOuterBg={item.progressOuterColor} progressInnerBg={item.progressinnerColor} />
             </View>
         </View>
     </Pressable>
@@ -43,29 +63,51 @@ const Home = () => {
                 </View>
             </View>
 
-            <View style={styles.cardContainer}>
-                <View style={{ justifyContent: 'space-between' }}>
-                    <Text style={styles.textStyle}>Your today's task{"\n"}almost done!</Text>
-                    <TouchableOpacity style={styles.viewTaskBtnStyle}>
-                        <Text style={styles.taskText}>View Task</Text>
-                    </TouchableOpacity>
+
+            <ScrollView>
+                <View style={styles.cardContainer}>
+                    <View style={{ justifyContent: 'space-between' }}>
+                        <Text style={styles.textStyle}>Your today's task{"\n"}almost done!</Text>
+                        <TouchableOpacity style={styles.viewTaskBtnStyle}>
+                            <Text style={styles.taskText}>View Task</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <CircularProgressBar percentage={85} />
+                    <Pressable style={styles.threeDotContainer}>
+                        <MIcon name="dots-horizontal" size={20} color={Colors.white} />
+                    </Pressable>
                 </View>
-                <CircularProgressBar percentage={85} />
-                <Pressable style={styles.threeDotContainer}>
-                    <MIcon name="dots-horizontal" size={20} color={Colors.white} />
-                </Pressable>
-            </View>
 
-            <View style={styles.inProgressStyle}>
-                <Text style={styles.inProgress} ellipsizeMode="tail" numberOfLines={1}>In Progress</Text>
-                <Text style={styles.progressText}>6</Text>
-            </View>
+                <View style={styles.inProgressStyle}>
+                    <Text style={styles.inProgress} ellipsizeMode="tail" numberOfLines={1}>In Progress</Text>
+                    <Text style={styles.progressText}>5</Text>
+                </View>
 
-            <FlatList
-                data={ProgressItem}
-                horizontal={true}
-                keyExtractor={(item) => item.id}
-                renderItem={inProgressRenderItem} />
+                <View style={styles.inPrFlatContainer}>
+                    <FlatList
+                        data={ProgressItem}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item) => item.id}
+                        renderItem={inProgressRenderItem} />
+                </View>
+
+                <View style={styles.taskTextContainer}>
+                    <Text style={styles.inProgress} ellipsizeMode="tail" numberOfLines={1}>Task Groups</Text>
+                    <Text style={styles.progressText}>5</Text>
+                </View>
+
+                <View style={styles.taskFlatContainer}>
+                    <FlatList
+                        data={taskGroupData}
+                        showsVerticalScrollIndicator={false}
+                        ItemSeparatorComponent={() => <View style={styles.taskSeperatorContainer}/>}
+                        keyExtractor={(item) => item.id}
+                        renderItem={tasksGroupRenderItem}
+                        nestedScrollEnabled />
+                </View>
+
+            </ScrollView>
 
         </View>
     )
@@ -160,8 +202,8 @@ const styles = StyleSheet.create({
     },
     inProgressStyle: {
         flexDirection: 'row',
-        marginHorizontal: 10,
-        marginTop: 20
+        marginHorizontal: 15,
+        marginTop: 15
     },
     inProgress: {
         fontSize: 18,
@@ -191,36 +233,83 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly'
     },
     inPrView1: {
-        flexDirection: 'row', 
-        marginHorizontal: 10, 
-        justifyContent: 'space-between', 
+        flexDirection: 'row',
+        marginHorizontal: 10,
+        justifyContent: 'space-between',
         alignItems: 'center'
     },
     text1: {
-        color: Colors.lightGrey, 
-        fontSize: 14, 
+        color: Colors.lightGrey,
+        fontSize: 14,
         fontWeight: '500'
     },
     inIconBg: {
-        width: 25, 
-        height: 25, 
-        borderRadius: 8, 
-        justifyContent: 'center', 
+        width: 25,
+        height: 25,
+        borderRadius: 8,
+        justifyContent: 'center',
         alignItems: 'center'
     },
     inIcon: {
         alignSelf: 'center'
     },
     inDescription: {
-        fontSize: 18, 
-        fontWeight: '600', 
-        color: Colors.black, 
-        marginHorizontal: 10, 
-        bottom: 10 
+        fontSize: 18,
+        fontWeight: '600',
+        color: Colors.black,
+        marginHorizontal: 10,
+        bottom: 10
     },
     linearProgressBg: {
         marginHorizontal: 10,
         bottom: 15
+    },
+    taskMainContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+        marginHorizontal: 10,
+        borderRadius: 10,
+        backgroundColor: Colors.white,
+        alignItems: 'center',
+        elevation: 1,
+        bottom: 5
+    },
+    taskIconBg: {
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
+    taskTitleContainer: {
+        right: 40
+    },
+    taskTitle: {
+        fontWeight: 'bold',
+        fontSize: 15,
+        color: Colors.black
+    },
+    taskDescription: {
+        fontWeight: 'normal',
+        fontSize: 13,
+        color: Colors.black
+    },
+    inPrFlatContainer: {
+        marginBottom: 10
+    },
+    taskTextContainer: {
+        flexDirection: 'row', 
+        marginHorizontal: 10
+    },
+    taskFlatContainer: {
+        marginBottom: 70
+    },
+    taskSeperatorContainer: {
+        height: 5
+    },
+    inPrFlat: {
+        marginBottom: 10
     }
 });
 

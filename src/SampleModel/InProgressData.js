@@ -20,7 +20,7 @@ const ProgressItem = [
         progress: 70,
         color: Colors.orangeLight,
         iconBgColor: Colors.inProgressIconBg2,
-        icoColor: Colors.inProgressIcon2,
+        icoColor: Colors.colorPrimary,
         progressColor: Colors.orange
     },
     {
@@ -42,7 +42,7 @@ const ProgressItem = [
         progress: 70,
         color: Colors.orangeLight,
         iconBgColor: Colors.inProgressIconBg2,
-        icoColor: Colors.inProgressIcon2,
+        icoColor: Colors.colorPrimary,
         progressColor: Colors.orange
     },
     {
