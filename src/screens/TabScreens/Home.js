@@ -273,7 +273,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         alignItems: 'center',
         elevation: 1,
-        bottom: 5
+        bottom: 5,
+        margin: 5
     },
     taskIconBg: {
         width: 40,
