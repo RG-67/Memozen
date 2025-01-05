@@ -49,14 +49,18 @@ const taskList = ({ item }) => (
             <View style={styles.firstView}>
                 <Text style={styles.taskTitle}>{item.title}</Text>
                 <View style={{backgroundColor: item.iconBg, ...styles.taskIconBg}}>
-                <IOIcon name={item.iconName} color={item.iconColor} size={15}/>
+                <IOIcon name={item.iconName} color={item.iconColor} size={12}/>
                 </View>
             </View>
             <Text style={styles.task}>{item.task}</Text>
             <View style={styles.secondView}>
+                <View style={styles.timeStyle}>
                 <F6Icon name="clock" color={Colors.colorPrimary} size={10}/>
-                <Text style={{color: Colors.colorPrimary, fontSize: 12, fontWeight: '200'}}>{item.time}</Text>
-                <Text style={{backgroundColor: item.tagBg, color: item.tagColor}}>{item.tag}</Text>
+                <Text style={styles.time}>{item.time}</Text>
+                </View>
+                <View style={{backgroundColor: item.tagBg, ...styles.tagStyleView}}>
+                <Text style={{ color: item.tagColor, ...styles.tagTextStyle}}>{item.tag}</Text>
+                </View>
             </View>
         </View>
     </Pressable>
@@ -176,32 +180,58 @@ const styles = StyleSheet.create({
     },
     firstView: {
         flexDirection: 'row',
-        marginTop: 10,
+        marginTop: 15,
         justifyContent: 'space-between',
-        alignContent: 'center'
+        alignContent: 'center',
+        marginHorizontal: 10
     },
     taskTitle: {
         color: Colors.black,
-        fontSize: 13,
-        fontWeight: '300'
+        fontSize: 12,
+        fontWeight: '400'
     },
     taskIconBg: {
-        borderRadius: 10,
-        width: 30,
-        height: 30,
-        justifyContent: 'center'
+        borderRadius: 8,
+        width: 25,
+        height: 25,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     task: {
         color: Colors.black,
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 15,
+        marginHorizontal: 10
     },
     secondView: {
         flexDirection: 'row',
         marginTop: 10,
         justifyContent: 'space-between',
         alignContent: 'center',
-        marginVertical: 10
+        marginTop: 10,
+        marginBottom: 15,
+        marginHorizontal: 10
+    },
+    timeStyle: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    time: {
+        color: Colors.colorPrimary, 
+        fontSize: 12, 
+        fontWeight: '400',
+        marginStart: 8,
+        alignSelf: 'center'
+    },
+    tagStyleView: {
+        borderRadius: 10
+    },
+    tagTextStyle: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        marginHorizontal: 10,
+        marginVertical: 2
     }
 });
 
