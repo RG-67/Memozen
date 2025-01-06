@@ -15,7 +15,19 @@ const Colors = {
     inProgressIconBg2: "#ece3ff",
     inProgressIcon2: "##9160f2",
     blue: "#0087ff",
-    orange: "#ff7d53"
+    orange: "#ff7d53",
+    noteBgHeader1: "#c3ddf5",
+    noteBg1: "#ddeaf7",
+    noteBgHeader2: "#fdc2de",
+    noteBg2: "#fee1ef",
+    noteBgHeader3: "#c6dec2",
+    noteBg3: "#e0eedf",
+    noteBgHeader4: "#f9ea95",
+    noteBg4: "#fdf4ca",
+    noteBgHeader5: "#d7c9eb",
+    noteBg5: "#eadff8",
+    grOrange: "#f57c5a",
+    grGreen: "#10827e"
 }
 
 export default Colors;
