@@ -13,10 +13,6 @@ const Register = () => {
             keyboardType='default'
             style={styles.inputStyle}/>
             <TextInput
-            placeholder="Business name"
-            keyboardType='default'
-            style={styles.inputStyle}/>
-            <TextInput
             placeholder="Phone"
             keyboardType='phone-pad'
             maxLength={10}
@@ -29,7 +25,7 @@ const Register = () => {
             placeholder="Password"
             keyboardType='visible-password'
             style={styles.inputStyle}/>
-            <TouchableOpacity style={styles.registerBtnStyle}>
+            <TouchableOpacity style={styles.registerBtnStyle} onPress={() => {}}>
                 <Text style={styles.btnTextStyle}>Sign Up</Text>
             </TouchableOpacity>
             <View style={styles.registerBtnTextContainer}>
