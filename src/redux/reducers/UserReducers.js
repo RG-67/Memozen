@@ -7,9 +7,9 @@ const initialState = {
 
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
-        case "REGISTER_USER_REQUEST":
+        case 'REGISTER_USER_REQUEST':
             return { ...state, loading: true, error: null };
-        case "REGISTER_USER_SUCCESS":
+        case 'REGISTER_USER_SUCCESS':
             return { ...state, loading: false, error: action.payload };
         case 'REGISTER_USER_FAILURE':
             return { ...state, loading: false, error: action.payload };
