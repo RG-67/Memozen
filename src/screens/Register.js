@@ -1,9 +1,19 @@
 import { Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
 import Colors from "../styles/Colors";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 
 
 const Register = () => {
+
+    const [formData, setFormData] = useState({name: '', phone: '', email: '', password: ''});
+    const dispatch = useDispatch();
+
+    const handleRegister = async () => {
+
+    }
+
     return (
         <View style={styles.mainContainer}>
             <Text style={styles.title}>Lets Register{"\n"}Account</Text>
@@ -24,8 +34,9 @@ const Register = () => {
             <TextInput
             placeholder="Password"
             keyboardType='visible-password'
+            secureTextEntry
             style={styles.inputStyle}/>
-            <TouchableOpacity style={styles.registerBtnStyle} onPress={() => {}}>
+            <TouchableOpacity style={styles.registerBtnStyle} onPress={() => {handleRegister}}>
                 <Text style={styles.btnTextStyle}>Sign Up</Text>
             </TouchableOpacity>
             <View style={styles.registerBtnTextContainer}>
