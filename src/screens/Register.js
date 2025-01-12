@@ -1,17 +1,44 @@
-import { Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
 import Colors from "../styles/Colors";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import RegisterValidation from "../hooks/UserValidation";
+import { register } from "../redux/actions/UserActions";
 
 
 
 const Register = () => {
-
-    const [formData, setFormData] = useState({name: '', phone: '', email: '', password: ''});
+    const [name, setname] = useState('');
+    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const { validateRegister } = RegisterValidation();
+    const [errors, setError] = useState('');
     const dispatch = useDispatch();
 
-    const handleRegister = async () => {
+    const handleRegister = () => {
+        const isValid = validateRegister(name, phone, email, password);
+        if (isValid) {
+            setError(isValid);
+        } else {
+            setError('');
+            registerUser();
+        }
+    }
 
+    const registerUser = async () => {
+        try {
+            const userData = { username: name, email: email, password: password, phone: phone };
+            setLoading(true);
+            const result = await dispatch(register(userData));
+            Alert.alert('Success', result?.message || 'Registration Successful', [{ text: 'OK' }]);
+        } catch (error) {
+            Alert.alert('Failed!!', error, [{ text: 'OK' }]);
+            setError(error);
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -19,24 +46,35 @@ const Register = () => {
             <Text style={styles.title}>Lets Register{"\n"}Account</Text>
             <Text style={styles.text}>Hello user, you have{"\n"} a greatful journey</Text>
             <TextInput
-            placeholder="Name"
-            keyboardType='default'
-            style={styles.inputStyle}/>
+                placeholder="Name"
+                keyboardType='default'
+                value={name}
+                onChangeText={setname}
+                style={styles.inputStyle} />
             <TextInput
-            placeholder="Phone"
-            keyboardType='phone-pad'
-            maxLength={10}
-            style={styles.inputStyle}/>
+                placeholder="Email"
+                keyboardType='email-address'
+                value={email}
+                onChangeText={setEmail}
+                style={styles.inputStyle} />
             <TextInput
-            placeholder="Email"
-            keyboardType='email-address'
-            style={styles.inputStyle}/>
+                placeholder="Phone"
+                keyboardType='phone-pad'
+                maxLength={10}
+                value={phone}
+                onChangeText={setPhone}
+                style={styles.inputStyle} />
             <TextInput
-            placeholder="Password"
-            keyboardType='visible-password'
-            secureTextEntry
-            style={styles.inputStyle}/>
-            <TouchableOpacity style={styles.registerBtnStyle} onPress={() => {handleRegister}}>
+                placeholder="Password"
+                keyboardType='visible-password'
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+                style={styles.inputStyle} />
+
+            {errors ? <Text style={styles.errorText}>{errors}</Text> : null}
+
+            <TouchableOpacity style={styles.registerBtnStyle} onPress={handleRegister}>
                 <Text style={styles.btnTextStyle}>Sign Up</Text>
             </TouchableOpacity>
             <View style={styles.registerBtnTextContainer}>
@@ -141,6 +179,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 30
+    },
+    errorInput: {
+        borderColor: Colors.red
+    },
+    errorText: {
+        fontSize: 14,
+        color: Colors.red,
+        fontWeight: '400',
+        marginBottom: 2,
+        alignSelf: 'center'
     }
 });
 

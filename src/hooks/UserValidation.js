@@ -5,25 +5,34 @@ import { ValidateEmail, ValidatePassword, ValidatePhone } from "../utility/Valid
 
 
 
-const RegisterValidation = () => {
-    const [error, setError] = useState('');
-
-    const validateRegister = (email, phone, password) => {
-        if (!ValidateEmail(email)) {
-            setError('Invalid Email Address');
-            return false;
+export const RegisterValidation = () => {
+    const validateRegister = (name, phone, email, password) => {
+        if(name === "") {
+            return 'Enter Name';
         }
         if (!ValidatePhone(phone)) {
-            setError('Invalid Phone Number');
-            return false;
+            return 'Invalid Phone Number';
+        }
+        if (!ValidateEmail(email)) {
+            return 'Invalid Email Address';
         }
         if (!ValidatePassword(password)) {
-            setError('Password at least 8 characters long and include uppercase, lowercase, number, and special character.')
-            return false;
+            return 'Password at least 8 characters long and include uppercase, lowercase, number, and special character.';
         }
-        setError('');
-        return true
+        
+        return '';
     }
+    return {validateRegister};
+}
+
+export const LoginValidation = (email, password) => {
+    if(!ValidateEmail(email)) {
+        return 'Invalid Email Address';
+    }
+    if(password === "") {
+        return 'Enter Password';
+    }
+    return '';
 }
 
 export default RegisterValidation;

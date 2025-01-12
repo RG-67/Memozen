@@ -1,35 +1,75 @@
-import { Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
 import Colors from "../styles/Colors";
+import { useState } from "react";
+import { LoginValidation } from "../hooks/UserValidation";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/actions/UserActions";
 
 
 
 
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const dispatch = useDispatch();
+
+
+    const handleLogin = () => {
+        const loginValidate = LoginValidation(email, password);
+        if(loginValidate) {
+            setError(loginValidate);
+        } else {
+            setError('');
+            loginUser();
+        }
+    }
+
+    const loginUser = async () => {
+        try {
+            const userData = {email, password};
+            setLoading(true);
+            const result = await dispatch(login(userData));
+            console.log(`LoginResult ==> ${result.message}`);
+            navigation.navigate('TabNavigator');
+        } catch (error) {
+            console.log(`Login Error ==> ${error}`);
+            Alert.alert('Failed!', error, [{text: "OK"}]);
+        }
+    }
+
     return (
         <View style={styles.mainContainer}>
             <Text style={styles.title}>Lets Sign you in</Text>
             <Text style={styles.text}>Welcome Back ,{"\n"}You have been missed</Text>
             <TextInput
-            placeholder="Email ,phone & username"
-            keyboardType='default'
-            style={styles.inputStyle}/>
+                placeholder="Email"
+                keyboardType='email-address'
+                value={email}
+                onChangeText={setEmail}
+                style={styles.inputStyle} />
             <TextInput
-            placeholder="Password"
-            keyboardType='visible-password'
-            style={styles.inputStyle}/>
+                placeholder="Password"
+                keyboardType='visible-password'
+                value={password}
+                onChangeText={setPassword}
+                style={styles.inputStyle} />
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
             <Text style={styles.forgotPassStyle}>Forgot Password ?</Text>
-            <TouchableOpacity style={styles.loginBtnStyle} onPress={() => navigation.navigate('TabNavigator')}>
+            <TouchableOpacity style={styles.loginBtnStyle} onPress={handleLogin/* () => navigation.navigate('TabNavigator') */}>
                 <Text style={styles.btnTextStyle}>Sign in</Text>
             </TouchableOpacity>
             <View style={styles.orLine}>
-                <View style={styles.line}/>
+                <View style={styles.line} />
                 <Text style={styles.or}>or</Text>
-                <View style={styles.line}/>
+                <View style={styles.line} />
             </View>
             <View style={styles.threeImgContainer}>
-                <Image source={require('../assets/images/google.png')} style={styles.iconStyle}/>
-                <Image source={require('../assets/images/facebook.png')} style={styles.iconStyle}/>
-                <Image source={require('../assets/images/apple.png')} style={styles.iconStyle}/>
+                <Image source={require('../assets/images/google.png')} style={styles.iconStyle} />
+                <Image source={require('../assets/images/facebook.png')} style={styles.iconStyle} />
+                <Image source={require('../assets/images/apple.png')} style={styles.iconStyle} />
             </View>
             <View style={styles.registerBtnTextContainer}>
                 <Text style={styles.questinText}>Don't have an account ? </Text>
@@ -140,6 +180,13 @@ const styles = StyleSheet.create({
     registerBtnTextContainer: {
         flexDirection: 'row',
         justifyContent: 'center'
+    },
+    errorText: {
+        fontSize: 14,
+        color: Colors.red,
+        fontWeight: '400',
+        marginBottom: 2,
+        alignSelf: 'center'
     }
 });
 

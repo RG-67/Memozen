@@ -1,8 +1,12 @@
 import axios from "axios";
+import {BASE_URL, BEARER_TOKEN} from '@env';
+
+const url = BASE_URL;
+const token = BEARER_TOKEN;
 
 
 const api = axios.create({
-    baseURL: process.env.BASE_URL,
+    baseURL: url,
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -12,7 +16,6 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        const token = process.env.BEARER_TOKEN
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

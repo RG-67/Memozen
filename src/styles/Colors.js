@@ -27,7 +27,8 @@ const Colors = {
     noteBgHeader5: "#d7c9eb",
     noteBg5: "#eadff8",
     grOrange: "#f57c5a",
-    grGreen: "#10827e"
+    grGreen: "#10827e",
+    red: "#FF3131"
 }
 
 export default Colors;
