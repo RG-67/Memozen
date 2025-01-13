@@ -3,6 +3,7 @@ import { GlobalProvider } from "./context/GlobalContext"
 import MainNavigator from "./navigation/MainNavigator";
 import { Provider } from "react-redux";
 import store from "./redux/Store";
+import { SocketProvider } from "./context/SocketContext";
 
 
 
@@ -12,7 +13,9 @@ const App = () => {
 
         <GlobalProvider>
             <Provider store={store}>
-                <MainNavigator />
+                {/* <SocketProvider> */}
+                    <MainNavigator />
+                {/* </SocketProvider> */}
             </Provider>
         </GlobalProvider>
     )
