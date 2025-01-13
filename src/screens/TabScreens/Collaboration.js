@@ -15,6 +15,11 @@ const Collaboration = () => {
             console.log('Connected to the socket server', socket.id);
         });
 
+        socket.on('serverMessage', (data) => {
+            console.log('Message from server:', data);
+            setChat((prevChat) => [...prevChat, data]);
+        });    
+
         socket.on('chatMessage', (data) => {
             console.log('Received from server:', data);
             setChat((prevChat) => [...prevChat, data]);
