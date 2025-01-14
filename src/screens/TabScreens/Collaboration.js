@@ -17,15 +17,16 @@ const Collaboration = () => {
 
         socket.on('serverMessage', (data) => {
             console.log('Message from server:', data);
-            setChat((prevChat) => [...prevChat, data]);
+            setChat((prevChat) => [...prevChat, {message: data.message, system: true}]);
         });    
 
         socket.on('chatMessage', (data) => {
             console.log('Received from server:', data);
-            setChat((prevChat) => [...prevChat, data]);
+            setChat((prevChat) => [...prevChat, {message: data.message, system: false}]);
         });
 
         return () => {
+            socket.off('serverMessage');
             socket.off('chatMessage');
             disconnectSocket();
         }
@@ -33,7 +34,7 @@ const Collaboration = () => {
 
 
     const sendMsg = () => {
-        if(message !== "") {
+        if(message.trim() !== "") {
             socket.emit('sendMessage', {message});
             setMessage('');
         }
@@ -43,7 +44,9 @@ const Collaboration = () => {
         <View style={styles.mainContainer}>
             <View style={{ flex: 1 }}>
                 {chat.map((msg, index) => (
-                    <Text key={index} style={{color: Colors.black}}>{msg.message}</Text>
+                    <Text key={index} style={{color: msg.system ? Colors.lightGrey : Colors.black,
+                        fontStyle: msg.system ? 'italic' : 'normal'
+                    }}>{msg.message}</Text>
                 ))}
             </View>
             <TextInput
