@@ -17,7 +17,7 @@ const Collaboration = () => {
 
         socket.on('serverMessage', (data) => {
             console.log('Message from server:', data);
-            setChat((prevChat) => [...prevChat, {message: data.message, system: true}]);
+            // setChat((prevChat) => [...prevChat, {message: data.message, system: true}]);
         });    
 
         socket.on('chatMessage', (data) => {
