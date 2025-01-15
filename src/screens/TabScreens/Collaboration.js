@@ -8,7 +8,7 @@ const Collaboration = () => {
     const [message, setMessage] = useState('');
     const [chat, setChat] = useState([]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         connectSocket();
 
         socket.on('connect', () => {
@@ -30,19 +30,19 @@ const Collaboration = () => {
             socket.off('chatMessage');
             disconnectSocket();
         }
-    }, []);
+    }, []); */
 
 
-    const sendMsg = () => {
+    /* const sendMsg = () => {
         if(message.trim() !== "") {
             socket.emit('sendMessage', {message});
             setMessage('');
         }
-    }
+    } */
 
     return (
         <View style={styles.mainContainer}>
-            <View style={{ flex: 1 }}>
+            {/* <View style={{ flex: 1 }}>
                 {chat.map((msg, index) => (
                     <Text key={index} style={{color: msg.system ? Colors.lightGrey : Colors.black,
                         fontStyle: msg.system ? 'italic' : 'normal'
@@ -58,19 +58,27 @@ const Collaboration = () => {
 
             <TouchableOpacity style={styles.submitBtnStyle} onPress={sendMsg}>
                 <Text style={styles.submitTxtStyle}>Send Message</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <Text style={styles.myRoom}>My Rooms</Text>
+            <Text style={styles.roomCount}>You have 1 room</Text>
         </View>
+
     )
 };
 
 
 
 const styles = StyleSheet.create({
-    mainContainer: {
+    /* mainContainer: {
         flex: 1,
         backgroundColor: Colors.white,
         padding: 20,
         marginBottom: 80
+    }, */
+    mainContainer: {
+        flex: 1,
+        backgroundColor: Colors.white
     },
     textInputStyle: {
         borderColor: Colors.lightGrey,
@@ -90,6 +98,19 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.white,
         textAlign: 'center'
+    },
+    myRoom: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        marginStart: 20,
+        marginTop: 20,
+        color: Colors.lightGrey
+    },
+    roomCount: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginStart: 20,
+        color: Colors.lightGrey
     }
 });
 
