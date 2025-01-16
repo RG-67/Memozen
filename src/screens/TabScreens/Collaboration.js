@@ -104,13 +104,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginStart: 20,
         marginTop: 20,
-        color: Colors.lightGrey
+        color: Colors.charcoal
     },
     roomCount: {
         fontSize: 16,
         fontWeight: '600',
         marginStart: 20,
-        color: Colors.lightGrey
+        color: Colors.charcoal
     }
 });
 
