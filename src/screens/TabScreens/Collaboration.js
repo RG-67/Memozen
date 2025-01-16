@@ -1,12 +1,20 @@
-import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Button, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
 import { useEffect, useState } from "react";
 import socket, { connectSocket, disconnectSocket } from "../../services/socketService";
+import groupModel from "../../SampleModel/GroupModel";
 
 const Collaboration = () => {
 
     const [message, setMessage] = useState('');
     const [chat, setChat] = useState([]);
+
+
+    const groupItemRender = ({item}) => (
+        <View style={styles.flatItem}>
+
+        </View>
+    )
 
     /* useEffect(() => {
         connectSocket();
@@ -62,6 +70,21 @@ const Collaboration = () => {
 
             <Text style={styles.myRoom}>My Rooms</Text>
             <Text style={styles.roomCount}>You have 1 room</Text>
+
+            <View style={styles.flatContainer}>
+                <FlatList
+                data={groupModel}
+                keyExtractor={(item) => item.id}
+                numColumns={2}
+                columnWrapperStyle={styles.columnWrapperStyle}
+                contentContainerStyle={styles.contentContainerStyle}
+                renderItem={groupItemRender}
+                />
+            </View>
+
+            {/* <Image source={{uri: 'https://easydrawingguides.com/wp-content/uploads/2017/04/how-to-draw-goku-featured-image-1200.png'}} 
+        style={{height: 80, width: 80, alignSelf: 'center', resizeMode: 'contain'}}/> */}
+
         </View>
 
     )
@@ -111,6 +134,21 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginStart: 20,
         color: Colors.charcoal
+    },
+    flatContainer: {
+        marginHorizontal: 10,
+        marginTop: 10
+    },
+    flatItem: {
+        borderRadius: 5,
+        borderWidth: 1,
+        elevation: 5
+    },
+    columnWrapperStyle: {
+        justifyContent: 'space-between'
+    },
+    contentContainerStyle: {
+
     }
 });
 
