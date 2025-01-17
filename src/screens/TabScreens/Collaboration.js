@@ -1,10 +1,10 @@
-import { Button, Dimensions, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Button, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
 import { useEffect, useState } from "react";
 import socket, { connectSocket, disconnectSocket } from "../../services/socketService";
 import groupModel from "../../SampleModel/GroupModel";
 
-const Collaboration = () => {
+const Collaboration = ({navigation}) => {
     const NUM_COLUMNS = 2;
     const WINNDOW_WIDTH = Dimensions.get('window').width;
     const ITEM_GAP = 2;
@@ -14,11 +14,19 @@ const Collaboration = () => {
     const [chat, setChat] = useState([]);
 
 
-    const groupItemRender = ({item}) => (
-        <View style={styles.flatItem}>
-            <Image source={{uri: item.groupImage1}} style={styles.imageStyle}/>
-        </View>
-    )
+    const groupItemRender = ({ item }) => (
+        <Pressable onPress={() => navigation.navigate('MemberScreen')}>
+            <View style={styles.flatItem}>
+                <View style={styles.imageContainer}>
+                    <Image source={{ uri: item.groupImage1 }} style={[styles.imageStyle, { zIndex: 3 }]} />
+                    <Image source={{ uri: item.groupImage2 }} style={[styles.imageStyle, { marginLeft: -90, zIndex: 2 }]} />
+                    <Image source={{ uri: item.groupImage3 }} style={[styles.imageStyle, { marginLeft: -90, zIndex: 1 }]} />
+                </View>
+                <Text style={styles.groupName}>{item.groupName}</Text>
+                <Text style={styles.member}>{item.totalGroupMember} Members</Text>
+            </View>
+        </Pressable>
+    );
 
     /* useEffect(() => {
         connectSocket();
@@ -77,12 +85,12 @@ const Collaboration = () => {
 
             <View style={styles.flatContainer}>
                 <FlatList
-                data={groupModel}
-                keyExtractor={(item) => item.id}
-                numColumns={NUM_COLUMNS}
-                columnWrapperStyle={styles.columnWrapperStyle}
-                contentContainerStyle={styles.contentContainerStyle}
-                renderItem={groupItemRender}
+                    data={groupModel}
+                    keyExtractor={(item) => item.id}
+                    numColumns={NUM_COLUMNS}
+                    columnWrapperStyle={styles.columnWrapperStyle}
+                    contentContainerStyle={styles.contentContainerStyle}
+                    renderItem={groupItemRender}
                 />
             </View>
 
@@ -142,15 +150,17 @@ const styles = StyleSheet.create({
     flatContainer: {
         marginHorizontal: 10,
         marginTop: 20,
+        marginBottom: 140
     },
     flatItem: {
         borderRadius: 10,
         elevation: 5,
-        minHeight: 150,
+        minHeight: 180,
         width: 150,
         backgroundColor: Colors.white,
         marginBottom: 10,
-        marginTop: 5
+        marginTop: 5,
+        justifyContent: 'center'
     },
     columnWrapperStyle: {
         justifyContent: 'space-between'
@@ -159,13 +169,29 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingBottom: 10
     },
+    imageContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
     imageStyle: {
+        height: 80,
+        width: 80,
         borderRadius: 50,
-        width: 30,
-        height: 30,
         borderWidth: 2,
-        padding: 10,
         borderColor: Colors.white
+    },
+    groupName: {
+        color: Colors.charcoal,
+        fontSize: 18,
+        fontWeight: '700',
+        textAlign: 'center'
+    },
+    member: {
+        color: Colors.lightGrey,
+        fontSize: 14,
+        fontWeight: '300',
+        textAlign: 'center'
     }
 });
 

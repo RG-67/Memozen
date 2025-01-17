@@ -6,6 +6,7 @@ import TabNavigator from './TabNavigation';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
 import Colors from '../styles/Colors';
+import memberScreen from '../screens/MemberScreen';
 
 
 
@@ -22,6 +23,7 @@ const MainNavigator = () => {
                 <Stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
                 <Stack.Screen name='Register' component={Register} options={{ headerShown: false }} />
                 <Stack.Screen name='TabNavigator' component={TabNavigator} options={{ headerShown: false }} />
+                <Stack.Screen name='MemberScreen' component={memberScreen} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     )
