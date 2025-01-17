@@ -1,10 +1,14 @@
-import { Button, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Button, Dimensions, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
 import { useEffect, useState } from "react";
 import socket, { connectSocket, disconnectSocket } from "../../services/socketService";
 import groupModel from "../../SampleModel/GroupModel";
 
 const Collaboration = () => {
+    const NUM_COLUMNS = 2;
+    const WINNDOW_WIDTH = Dimensions.get('window').width;
+    const ITEM_GAP = 2;
+    const ITEM_WIDTH = (WINNDOW_WIDTH - (ITEM_GAP * (NUM_COLUMNS + 1))) / NUM_COLUMNS;
 
     const [message, setMessage] = useState('');
     const [chat, setChat] = useState([]);
@@ -12,7 +16,7 @@ const Collaboration = () => {
 
     const groupItemRender = ({item}) => (
         <View style={styles.flatItem}>
-
+            <Image source={{uri: item.groupImage1}} style={styles.imageStyle}/>
         </View>
     )
 
@@ -75,7 +79,7 @@ const Collaboration = () => {
                 <FlatList
                 data={groupModel}
                 keyExtractor={(item) => item.id}
-                numColumns={2}
+                numColumns={NUM_COLUMNS}
                 columnWrapperStyle={styles.columnWrapperStyle}
                 contentContainerStyle={styles.contentContainerStyle}
                 renderItem={groupItemRender}
@@ -137,18 +141,31 @@ const styles = StyleSheet.create({
     },
     flatContainer: {
         marginHorizontal: 10,
-        marginTop: 10
+        marginTop: 20,
     },
     flatItem: {
-        borderRadius: 5,
-        borderWidth: 1,
-        elevation: 5
+        borderRadius: 10,
+        elevation: 5,
+        minHeight: 150,
+        width: 150,
+        backgroundColor: Colors.white,
+        marginBottom: 10,
+        marginTop: 5
     },
     columnWrapperStyle: {
         justifyContent: 'space-between'
     },
     contentContainerStyle: {
-
+        paddingHorizontal: 10,
+        paddingBottom: 10
+    },
+    imageStyle: {
+        borderRadius: 50,
+        width: 30,
+        height: 30,
+        borderWidth: 2,
+        padding: 10,
+        borderColor: Colors.white
     }
 });
 
