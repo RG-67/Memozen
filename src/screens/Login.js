@@ -1,15 +1,17 @@
 import { Alert, Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
 import Colors from "../styles/Colors";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { LoginValidation } from "../hooks/UserValidation";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/actions/UserActions";
+import { AuthContext } from "../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
 
 const Login = ({ navigation }) => {
-
+    const {setIsLoggedIn} = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -33,7 +35,9 @@ const Login = ({ navigation }) => {
             setLoading(true);
             const result = await dispatch(login(userData));
             console.log(`LoginResult ==> ${result.message}`);
-            navigation.navigate('TabNavigator');
+            await AsyncStorage.setItem("userId", result.data.userid);
+            setIsLoggedIn(true);
+            // navigation.navigate('TabNavigator');
         } catch (error) {
             console.log(`Login Error ==> ${error}`);
             Alert.alert('Failed!', error, [{text: "OK"}]);

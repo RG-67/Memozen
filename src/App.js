@@ -4,6 +4,7 @@ import MainNavigator from "./navigation/MainNavigator";
 import { Provider } from "react-redux";
 import store from "./redux/Store";
 import { SocketProvider } from "./context/SocketContext";
+import { AuthProvider } from "./context/AuthContext";
 
 
 
@@ -11,6 +12,7 @@ import { SocketProvider } from "./context/SocketContext";
 const App = () => {
     return (
 
+        <AuthProvider>
         <GlobalProvider>
             <Provider store={store}>
                 {/* <SocketProvider> */}
@@ -18,6 +20,7 @@ const App = () => {
                 {/* </SocketProvider> */}
             </Provider>
         </GlobalProvider>
+        </AuthProvider>
     )
 }
 
