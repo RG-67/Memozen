@@ -3,8 +3,13 @@ import Colors from "../../styles/Colors";
 import { useEffect, useState } from "react";
 import socket, { connectSocket, disconnectSocket } from "../../services/socketService";
 import groupModel from "../../SampleModel/GroupModel";
+import { getGroupByUser } from "../../redux/actions/GroupActions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
 
-const Collaboration = ({navigation}) => {
+const Collaboration = ({ navigation }) => {
+    const dispatch = useDispatch();
+
     const NUM_COLUMNS = 2;
     const WINNDOW_WIDTH = Dimensions.get('window').width;
     const ITEM_GAP = 2;
@@ -13,9 +18,25 @@ const Collaboration = ({navigation}) => {
     const [message, setMessage] = useState('');
     const [chat, setChat] = useState([]);
 
+    let groupId;
+
+    useEffect(() => {
+        const fetchGroups = async () => {
+            try {
+                const userId = await AsyncStorage.getItem('userId');
+                const result = await dispatch(getGroupByUser(userId));
+                console.log("Result ==>", result.data[0].groupId);
+                groupId = result.data[0].groupId;
+            } catch (error) {
+                console.error("ErrorResult ==>", error);
+            }
+        };
+        fetchGroups();
+    }, []);
+
 
     const groupItemRender = ({ item }) => (
-        <Pressable onPress={() => navigation.navigate('MemberScreen')}>
+        <Pressable onPress={() => navigation.navigate('MemberScreen', {groupId: groupId})}>
             <View style={styles.flatItem}>
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: item.groupImage1 }} style={[styles.imageStyle, { zIndex: 3 }]} />

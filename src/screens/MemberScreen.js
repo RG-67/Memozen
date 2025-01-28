@@ -2,13 +2,30 @@ import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from "
 import Colors from "../styles/Colors";
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import groupModel from "../SampleModel/GroupModel";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { getGroupMembesrByGroupId } from "../redux/actions/GroupActions";
 
 const NUM_COLUMNS = 2;
 const ITEM_GAP = 15;
 const WINNDOW_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = (WINNDOW_WIDTH - (ITEM_GAP * (NUM_COLUMNS + 1))) / NUM_COLUMNS;
 
-const memberScreen = () => {
+const memberScreen = ({ route }) => {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const fetchGroupMembers = async () => {
+            try {
+                const {groupId} = route.params;
+                const result = await dispatch(getGroupMembesrByGroupId(groupId));
+                console.log("GrpMem ==>", result);
+            } catch (error) {
+                console.log("GrpMemErr ==>", error);
+            }
+        }
+        fetchGroupMembers();
+    }, []);
 
     const renderMembers = ({ item }) => (
         <Pressable onPress={() => { }}>
