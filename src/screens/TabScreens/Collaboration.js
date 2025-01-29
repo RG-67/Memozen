@@ -17,6 +17,7 @@ const Collaboration = ({ navigation }) => {
 
     const [message, setMessage] = useState('');
     const [chat, setChat] = useState([]);
+    const [rooms, setRooms] = useState(null);
     const [data, setData] = useState([]);
 
     let groupId;
@@ -38,7 +39,7 @@ const Collaboration = ({ navigation }) => {
                         groupImage3: memberImage[2] || defaultImage
                     }
                 });
-
+                setRooms(result?.totalRooms);
                 setData(formattedData);
                 // groupId = result.data[0].groupId;
             } catch (error) {
@@ -50,7 +51,7 @@ const Collaboration = ({ navigation }) => {
 
 
     const groupItemRender = ({ item }) => (
-        <Pressable onPress={() => navigation.navigate('MemberScreen', {groupId: groupId})}>
+        <Pressable onPress={() => navigation.navigate('MemberScreen', {groupId: item.groupId})}>
             <View style={styles.flatItem}>
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: item.groupImage1 }} style={[styles.imageStyle, { zIndex: 3 }]} />
@@ -116,12 +117,16 @@ const Collaboration = ({ navigation }) => {
             </TouchableOpacity> */}
 
             <Text style={styles.myRoom}>My Rooms</Text>
-            <Text style={styles.roomCount}>You have 1 room</Text>
+            {rooms && (
+                <>
+                <Text style={styles.roomCount}>You have {rooms} room</Text>
+                </>
+            )}
 
             <View style={styles.flatContainer}>
                 <FlatList
                     data={data}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.userId}
                     numColumns={NUM_COLUMNS}
                     columnWrapperStyle={styles.columnWrapperStyle}
                     contentContainerStyle={styles.contentContainerStyle}

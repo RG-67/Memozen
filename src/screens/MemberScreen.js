@@ -3,7 +3,7 @@ import Colors from "../styles/Colors";
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import groupModel from "../SampleModel/GroupModel";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getGroupMembesrByGroupId } from "../redux/actions/GroupActions";
 
 const NUM_COLUMNS = 2;
@@ -12,14 +12,19 @@ const WINNDOW_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = (WINNDOW_WIDTH - (ITEM_GAP * (NUM_COLUMNS + 1))) / NUM_COLUMNS;
 
 const memberScreen = ({ route }) => {
+    const defaultImage = 'https://upload.wikimedia.org/wikipedia/hu/thumb/1/1d/Vegita_SSJBlue.png/250px-Vegita_SSJBlue.png';
+    const defaultAdminImage = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTz8DYA1dJX3z-DCiz6NFjCfdHXatX0OEDugw&s';
     const dispatch = useDispatch();
+    const [data, setData] = useState([]);
+    const [adminData, setAdminData] = useState({});
 
     useEffect(() => {
         const fetchGroupMembers = async () => {
             try {
-                const {groupId} = route.params;
+                const { groupId } = route.params;
                 const result = await dispatch(getGroupMembesrByGroupId(groupId));
-                console.log("GrpMem ==>", result);
+                setAdminData(result?.data);
+                setData(result?.data?.members || []);
             } catch (error) {
                 console.log("GrpMemErr ==>", error);
             }
@@ -30,8 +35,8 @@ const memberScreen = ({ route }) => {
     const renderMembers = ({ item }) => (
         <Pressable onPress={() => { }}>
             <View style={styles.memberItemMainContainer}>
-                <Image source={{ uri: item.groupImage3 }} style={styles.itemImg} />
-                <Text style={styles.name}>{item.groupName}</Text>
+                <Image source={{ uri: item.userImage || defaultImage }} style={styles.itemImg} />
+                <Text style={styles.name}>{item.userName}</Text>
             </View>
         </Pressable>
     );
@@ -41,16 +46,18 @@ const memberScreen = ({ route }) => {
             <Text style={styles.members}>Members</Text>
             <Text style={styles.owner}>Owner</Text>
 
-            <View style={styles.memberContainer}>
-                <Icon name="badge" size={20} color={Colors.blue} style={{ marginStart: 10, marginTop: 10 }} />
-                <Image source={{ uri: 'https://storage.googleapis.com/pod_public/750/232853.jpg' }} style={styles.imageStyle} />
-                <Text style={styles.memberName}>Goku</Text>
-            </View>
+            {adminData && (
+                <View style={styles.memberContainer}>
+                    <Icon name="badge" size={20} color={Colors.blue} style={{ marginStart: 10, marginTop: 10 }} />
+                    <Image source={{ uri: adminData.adminImage || defaultAdminImage }} style={styles.imageStyle} />
+                    <Text style={styles.memberName}>{adminData.adminName}</Text>
+                </View>
+            )}
 
             <Text style={styles.memberStyle}>Members</Text>
             <FlatList
-                data={groupModel}
-                keyExtractor={(item) => item.id}
+                data={data}
+                keyExtractor={(item) => item.userId}
                 numColumns={NUM_COLUMNS}
                 columnWrapperStyle={styles.columnWrapperStyle}
                 contentContainerStyle={styles.contentContainerStyle}
