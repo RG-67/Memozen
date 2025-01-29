@@ -17,6 +17,7 @@ const Collaboration = ({ navigation }) => {
 
     const [message, setMessage] = useState('');
     const [chat, setChat] = useState([]);
+    const [data, setData] = useState([]);
 
     let groupId;
 
@@ -25,8 +26,21 @@ const Collaboration = ({ navigation }) => {
             try {
                 const userId = await AsyncStorage.getItem('userId');
                 const result = await dispatch(getGroupByUser(userId));
-                console.log("Result ==>", result.data[0].groupId);
-                groupId = result.data[0].groupId;
+                // console.log("Result ==>", result.data[0].groupId);
+
+                const formattedData = result?.data.map(group => {
+                    const defaultImage = 'https://storage.googleapis.com/pod_public/750/232853.jpg';
+                    const memberImage = group.groupData.map(member => member.userImage || defaultImage).slice(0, 3);
+                    return {
+                        ...group,
+                        groupImage1: memberImage[0] || defaultImage,
+                        groupImage2: memberImage[1] || defaultImage,
+                        groupImage3: memberImage[2] || defaultImage
+                    }
+                });
+
+                setData(formattedData);
+                // groupId = result.data[0].groupId;
             } catch (error) {
                 console.error("ErrorResult ==>", error);
             }
@@ -44,7 +58,7 @@ const Collaboration = ({ navigation }) => {
                     <Image source={{ uri: item.groupImage3 }} style={[styles.imageStyle, { marginLeft: -90, zIndex: 1 }]} />
                 </View>
                 <Text style={styles.groupName}>{item.groupName}</Text>
-                <Text style={styles.member}>{item.totalGroupMember} Members</Text>
+                <Text style={styles.member}>{item.groupMemberCount} Members</Text>
             </View>
         </Pressable>
     );
@@ -106,7 +120,7 @@ const Collaboration = ({ navigation }) => {
 
             <View style={styles.flatContainer}>
                 <FlatList
-                    data={groupModel}
+                    data={data}
                     keyExtractor={(item) => item.id}
                     numColumns={NUM_COLUMNS}
                     columnWrapperStyle={styles.columnWrapperStyle}
@@ -204,13 +218,13 @@ const styles = StyleSheet.create({
     },
     groupName: {
         color: Colors.charcoal,
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: '700',
         textAlign: 'center'
     },
     member: {
         color: Colors.lightGrey,
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '300',
         textAlign: 'center'
     }
