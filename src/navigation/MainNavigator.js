@@ -6,9 +6,10 @@ import TabNavigator from './TabNavigation';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
 import Colors from '../styles/Colors';
-import memberScreen from '../screens/MemberScreen';
+import MemberScreen from '../screens/MemberScreen';
 import { useContext } from 'react';
 import { AuthContext, AuthProvider } from '../context/AuthContext';
+import ChatScreen from '../screens/ChatScreen';
 
 
 
@@ -24,8 +25,9 @@ const MainNavigator = () => {
             <StatusBar backgroundColor={Colors.colorPrimary} barStyle={'light-content'} />
             {isLoggedIn ? (
                 <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name='TabNavigator' component={TabNavigator} options={{ headerShown: false }} />
-                    <Stack.Screen name='MemberScreen' component={memberScreen} />
+                    <Stack.Screen name='TabNavigator' component={TabNavigator} />
+                    <Stack.Screen name='MemberScreen' component={MemberScreen} />
+                    <Stack.Screen name='ChatScreen' component={ChatScreen} />
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator initialRouteName='FirstScreen' screenOptions={{ headerShown: false }}>

@@ -11,7 +11,7 @@ const ITEM_GAP = 15;
 const WINNDOW_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = (WINNDOW_WIDTH - (ITEM_GAP * (NUM_COLUMNS + 1))) / NUM_COLUMNS;
 
-const memberScreen = ({ route }) => {
+const MemberScreen = ({ route, navigation }) => {
     const defaultImage = 'https://upload.wikimedia.org/wikipedia/hu/thumb/1/1d/Vegita_SSJBlue.png/250px-Vegita_SSJBlue.png';
     const defaultAdminImage = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTz8DYA1dJX3z-DCiz6NFjCfdHXatX0OEDugw&s';
     const dispatch = useDispatch();
@@ -33,7 +33,7 @@ const memberScreen = ({ route }) => {
     }, []);
 
     const renderMembers = ({ item }) => (
-        <Pressable onPress={() => { }}>
+        <Pressable onPress={() => { navigation.navigate('ChatScreen', { userId: item.userId, userName: item.userName, userImage: item.userImage || defaultImage }) }}>
             <View style={styles.memberItemMainContainer}>
                 <Image source={{ uri: item.userImage || defaultImage }} style={styles.itemImg} />
                 <Text style={styles.name}>{item.userName}</Text>
@@ -152,4 +152,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default memberScreen;
+export default MemberScreen;
