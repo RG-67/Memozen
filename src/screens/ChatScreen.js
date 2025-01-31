@@ -11,12 +11,7 @@ const ChatScreen = ({ route }) => {
 
     useEffect(() => {
         setUserDetails(route.params);
-        // console.log("userDetails1 ==> ", userDetails);
     }, [route.params]);
-
-    /* useEffect(() => {
-        console.log("userDetails ==> ", userDetails);
-    }, [userDetails]); */
 
 
 
