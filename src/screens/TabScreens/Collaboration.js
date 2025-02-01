@@ -27,7 +27,6 @@ const Collaboration = ({ navigation }) => {
             try {
                 const userId = await AsyncStorage.getItem('userId');
                 const result = await dispatch(getGroupByUser(userId));
-                // console.log("Result ==>", result.data[0].groupId);
 
                 const formattedData = result?.data.map(group => {
                     const defaultImage = 'https://storage.googleapis.com/pod_public/750/232853.jpg';
@@ -41,7 +40,6 @@ const Collaboration = ({ navigation }) => {
                 });
                 setRooms(result?.totalRooms);
                 setData(formattedData);
-                // groupId = result.data[0].groupId;
             } catch (error) {
                 console.error("ErrorResult ==>", error);
             }
@@ -51,7 +49,7 @@ const Collaboration = ({ navigation }) => {
 
 
     const groupItemRender = ({ item }) => (
-        <Pressable onPress={() => navigation.navigate('MemberScreen', {groupId: item.groupId})}>
+        <Pressable onPress={() => navigation.navigate('MemberScreen', { groupId: item.groupId })}>
             <View style={styles.flatItem}>
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: item.groupImage1 }} style={[styles.imageStyle, { zIndex: 3 }]} />
@@ -64,62 +62,13 @@ const Collaboration = ({ navigation }) => {
         </Pressable>
     );
 
-    /* useEffect(() => {
-        connectSocket();
-
-        socket.on('connect', () => {
-            console.log('Connected to the socket server', socket.id);
-        });
-
-        socket.on('serverMessage', (data) => {
-            console.log('Message from server:', data);
-            // setChat((prevChat) => [...prevChat, {message: data.message, system: true}]);
-        });    
-
-        socket.on('chatMessage', (data) => {
-            console.log('Received from server:', data);
-            setChat((prevChat) => [...prevChat, {message: data.message, system: false}]);
-        });
-
-        return () => {
-            socket.off('serverMessage');
-            socket.off('chatMessage');
-            disconnectSocket();
-        }
-    }, []); */
-
-
-    /* const sendMsg = () => {
-        if(message.trim() !== "") {
-            socket.emit('sendMessage', {message});
-            setMessage('');
-        }
-    } */
-
     return (
         <View style={styles.mainContainer}>
-            {/* <View style={{ flex: 1 }}>
-                {chat.map((msg, index) => (
-                    <Text key={index} style={{color: msg.system ? Colors.lightGrey : Colors.black,
-                        fontStyle: msg.system ? 'italic' : 'normal'
-                    }}>{msg.message}</Text>
-                ))}
-            </View>
-            <TextInput
-                style={styles.textInputStyle}
-                placeholder="Type your message"
-                value={message}
-                keyboardType='default'
-                onChangeText={setMessage} />
-
-            <TouchableOpacity style={styles.submitBtnStyle} onPress={sendMsg}>
-                <Text style={styles.submitTxtStyle}>Send Message</Text>
-            </TouchableOpacity> */}
 
             <Text style={styles.myRoom}>My Rooms</Text>
             {rooms && (
                 <>
-                <Text style={styles.roomCount}>You have {rooms} room</Text>
+                    <Text style={styles.roomCount}>You have {rooms} room</Text>
                 </>
             )}
 
@@ -134,9 +83,6 @@ const Collaboration = ({ navigation }) => {
                 />
             </View>
 
-            {/* <Image source={{uri: 'https://easydrawingguides.com/wp-content/uploads/2017/04/how-to-draw-goku-featured-image-1200.png'}} 
-        style={{height: 80, width: 80, alignSelf: 'center', resizeMode: 'contain'}}/> */}
-
         </View>
 
     )
@@ -145,12 +91,6 @@ const Collaboration = ({ navigation }) => {
 
 
 const styles = StyleSheet.create({
-    /* mainContainer: {
-        flex: 1,
-        backgroundColor: Colors.white,
-        padding: 20,
-        marginBottom: 80
-    }, */
     mainContainer: {
         flex: 1,
         backgroundColor: Colors.white
