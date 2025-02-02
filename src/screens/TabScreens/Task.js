@@ -4,6 +4,10 @@ import F6Icon from 'react-native-vector-icons/FontAwesome6'
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import TaskData from "../../SampleModel/TasksData";
 import IOIcon from 'react-native-vector-icons/Ionicons';
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { getTasksByUserId } from "../../redux/actions/TaskAction";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 const getCurrentMontheDates = () => {
@@ -48,18 +52,18 @@ const taskList = ({ item }) => (
         <View style={styles.taskListContainer}>
             <View style={styles.firstView}>
                 <Text style={styles.taskTitle}>{item.title}</Text>
-                <View style={{backgroundColor: item.iconBg, ...styles.taskIconBg}}>
-                <IOIcon name={item.iconName} color={item.iconColor} size={12}/>
+                <View style={{ backgroundColor: item.iconBg, ...styles.taskIconBg }}>
+                    <IOIcon name={item.iconName} color={item.iconColor} size={12} />
                 </View>
             </View>
-            <Text style={styles.task}>{item.task}</Text>
+            <Text style={styles.task}>{item.description}</Text>
             <View style={styles.secondView}>
                 <View style={styles.timeStyle}>
-                <F6Icon name="clock" color={Colors.colorPrimary} size={10}/>
-                <Text style={styles.time}>{item.time}</Text>
+                    <F6Icon name="clock" color={Colors.colorPrimary} size={10} />
+                    <Text style={styles.time}>{item.createTime}</Text>
                 </View>
-                <View style={{backgroundColor: item.tagBg, ...styles.tagStyleView}}>
-                <Text style={{ color: item.tagColor, ...styles.tagTextStyle}}>{item.tag}</Text>
+                <View style={{ backgroundColor: item.tagBg, ...styles.tagStyleView }}>
+                    <Text style={{ color: item.tagColor, ...styles.tagTextStyle }}>{item.status}</Text>
                 </View>
             </View>
         </View>
@@ -68,8 +72,35 @@ const taskList = ({ item }) => (
 
 
 const Task = () => {
+    const dispatch = useDispatch();
+    const [taskData, setTaskData] = useState([]);
     const dates = getCurrentMontheDates();
     const dummyTaskText = [{ id: 1, tag: "All" }, { id: 2, tag: "To do" }, { id: 3, tag: "In Progress" }, { id: 4, tag: "Done" }, { id: 5, tag: "Collaboration" }];
+
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchTasks = async () => {
+                try {
+                    const result = await dispatch(getTasksByUserId());
+                    const formattedData = result?.data.map(task => ({
+                        ...task,
+                        iconName: task.category === "Official" ? "briefcase" : "book",
+                        iconBg: task.category === "Official" ? Colors.inProgressIconBg : Colors.orangeLight,
+                        iconColor: task.category === "Official" ? Colors.inProgressIcon : Colors.orange,
+                        tagBg: task.status === "Completed" ? Colors.inProgressIconBg2 : Colors.inProgressIconBg,
+                        tagColor: task.status === "Completed" ? Colors.colorPrimary : Colors.inProgressIcon
+                    }));
+                    setTaskData(formattedData);
+                    // console.error("TaskResultLatest ==>", taskData);
+                } catch (error) {
+                    console.error("TaskResultErr ==>", error);
+                }
+            }
+
+            fetchTasks();
+        }, [])
+    );
 
     return (
         <View style={styles.mainContainer}>
@@ -105,12 +136,12 @@ const Task = () => {
             </View>
 
             <ScrollView>
-            <View style={{ marginTop: 20, marginHorizontal: 10, marginBottom: 70 }}>
-                <FlatList
-                    data={TaskData}
-                    keyExtractor={(item) => item.id}
-                    renderItem={taskList} />
-            </View>
+                <View style={{ marginTop: 20, marginHorizontal: 10, marginBottom: 70 }}>
+                    <FlatList
+                        data={taskData}
+                        keyExtractor={(item) => item.taskid}
+                        renderItem={taskList} />
+                </View>
             </ScrollView>
 
         </View>
@@ -218,8 +249,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     time: {
-        color: Colors.colorPrimary, 
-        fontSize: 12, 
+        color: Colors.colorPrimary,
+        fontSize: 12,
         fontWeight: '400',
         marginStart: 8,
         alignSelf: 'center'
