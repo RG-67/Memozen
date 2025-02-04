@@ -20,8 +20,8 @@ const ChatScreen = ({ route }) => {
     useEffect(() => {
         const setIds = async () => {
             try {
-                const storedSenderId = await AsyncStorage.getItem('userId');
-                if (storedSenderId) {
+                const storedSenderId = await AsyncStorage.getItem('userDetails');
+                if (JSON.parse(storedSenderId).userid) {
                     setUserDetails(route.params);
                     setSenderId(storedSenderId);
                     connectSocket();

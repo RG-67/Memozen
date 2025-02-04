@@ -25,8 +25,8 @@ const Collaboration = ({ navigation }) => {
     useEffect(() => {
         const fetchGroups = async () => {
             try {
-                const userId = await AsyncStorage.getItem('userId');
-                const result = await dispatch(getGroupByUser(userId));
+                const userId = await AsyncStorage.getItem('userDetails');
+                const result = await dispatch(getGroupByUser(JSON.parse(userId).userid));
 
                 const formattedData = result?.data.map(group => {
                     const defaultImage = 'https://storage.googleapis.com/pod_public/750/232853.jpg';

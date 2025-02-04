@@ -35,7 +35,7 @@ const Login = ({ navigation }) => {
             setLoading(true);
             const result = await dispatch(login(userData));
             console.log(`LoginResult ==> ${result.message}`);
-            await AsyncStorage.setItem("userId", result.data.userid);
+            await AsyncStorage.setItem("userDetails", JSON.stringify(result.data));
             setIsLoggedIn(true);
             // navigation.navigate('TabNavigator');
         } catch (error) {

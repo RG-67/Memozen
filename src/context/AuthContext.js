@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const checkLoginStatus = async () => {
-            const userId = await AsyncStorage.getItem("userId");
+            const userId = await AsyncStorage.getItem("userDetails");
             setIsLoggedIn(!!userId);
         }
 

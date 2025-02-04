@@ -8,6 +8,8 @@ import InProgressIcon from 'react-native-vector-icons/FontAwesome6'
 import LinearProgressBar from "../../components/LinearProgressBar";
 import taskGroupData from "../../SampleModel/TasksGroupData";
 import IOIcon from 'react-native-vector-icons/Ionicons';
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -47,19 +49,31 @@ const tasksGroupRenderItem = ({ item }) => (
 );
 
 const Home = () => {
+
+    const [userDetails, setUserDetails] = useState({});
+
+    useEffect(() => {
+        const getUserDetails = async () => {
+            const userDt = await AsyncStorage.getItem("userDetails");
+            setUserDetails(JSON.parse(userDt));
+        }
+        getUserDetails();
+    }, []);
+
+
     return (
         <View style={styles.mainContainer}>
 
             <View style={styles.headerStyle}>
                 <Pressable onPress={() => { }}>
-                    <Image source={require('../../assets/images/person.png')} style={styles.prImage} />
+                    <Image source={{ uri: userDetails?.userimage || 'https://storage.googleapis.com/pod_public/750/232853.jpg' }} style={styles.prImage} />
                 </Pressable>
                 <View style={styles.textContainer}>
                     <Text style={styles.HelloText}>Hello!</Text>
-                    <Text style={styles.nameText}>Rittik Ghosh</Text>
+                    <Text style={styles.nameText}>{userDetails?.username}</Text>
                 </View>
                 <View style={styles.notificationContainer}>
-                    <Icon name="notifications" size={30} style={styles.notification} />
+                    <Icon name="notifications" size={22} style={styles.notification} />
                 </View>
             </View>
 
@@ -101,7 +115,7 @@ const Home = () => {
                     <FlatList
                         data={taskGroupData}
                         showsVerticalScrollIndicator={false}
-                        ItemSeparatorComponent={() => <View style={styles.taskSeperatorContainer}/>}
+                        ItemSeparatorComponent={() => <View style={styles.taskSeperatorContainer} />}
                         keyExtractor={(item) => item.id}
                         renderItem={tasksGroupRenderItem}
                         nestedScrollEnabled />
@@ -148,11 +162,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     notificationContainer: {
-
+        height: 30,
+        width: 30,
+        borderRadius: 50,
+        backgroundColor: Colors.red,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     notification: {
-
-
+        color: Colors.white
     },
     cardContainer: {
         flexDirection: 'row',
@@ -300,7 +318,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     taskTextContainer: {
-        flexDirection: 'row', 
+        flexDirection: 'row',
         marginHorizontal: 10
     },
     taskFlatContainer: {

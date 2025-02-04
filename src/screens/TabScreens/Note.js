@@ -11,13 +11,13 @@ const ITEM_GAP = 10
 const NUM_COLUMNS = 2
 const ITEM_WIDTH = (SCREEN_WIDTH - ITEM_GAP * (NUM_COLUMNS + 1)) / NUM_COLUMNS; // Calculate item width
 
-const noteRenderItem = ({item}) => (
-    <Pressable onPress={() => {}}>
-        <View style={{ backgroundColor: item.cardBg, ...styles.noteMainContainer}}>
-            <View style={{height: 10, backgroundColor: item.cardTopBg, borderTopLeftRadius: 10, borderTopRightRadius: 10}}/>
+const noteRenderItem = ({ item }) => (
+    <Pressable onPress={() => { }}>
+        <View style={{ backgroundColor: item.cardBg, ...styles.noteMainContainer }}>
+            <View style={{ height: 10, backgroundColor: item.cardTopBg, borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
             <Text style={styles.titleStyle}>{item.title}</Text>
             <View style={styles.noteItemContainer}>
-                <F5Icon name="copy" size={20} color={item.iconColor}/>
+                <F5Icon name="copy" size={20} color={item.iconColor} />
                 <Text style={styles.time}>{item.time}</Text>
             </View>
         </View>
@@ -38,14 +38,14 @@ const Note = () => {
                 </View>
             </View>
 
-            <View style={{marginTop: 10}}>
+            <View style={{ marginTop: 10 }}>
                 <FlatList
-                data={Notes}
-                keyExtractor={(item) => item.id}
-                columnWrapperStyle={styles.columnWrapper}
-                numColumns={NUM_COLUMNS}
-                contentContainerStyle={styles.contentContainer}
-                renderItem={noteRenderItem}
+                    data={Notes}
+                    keyExtractor={(item) => item.id}
+                    columnWrapperStyle={styles.columnWrapper}
+                    numColumns={NUM_COLUMNS}
+                    contentContainerStyle={styles.contentContainer}
+                    renderItem={noteRenderItem}
                 />
             </View>
 
