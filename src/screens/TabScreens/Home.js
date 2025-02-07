@@ -8,8 +8,11 @@ import InProgressIcon from 'react-native-vector-icons/FontAwesome6'
 import LinearProgressBar from "../../components/LinearProgressBar";
 import taskGroupData from "../../SampleModel/TasksGroupData";
 import IOIcon from 'react-native-vector-icons/Ionicons';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { getTasksByUserId } from "../../redux/actions/TaskAction";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 
@@ -17,14 +20,14 @@ const inProgressRenderItem = ({ item }) => (
     <Pressable onPress={() => { }} style={styles.inPrFlat}>
         <View style={{ backgroundColor: item.color, ...styles.inProgressItemContainer }}>
             <View style={styles.inPrView1}>
-                <Text style={styles.text1}>{item.type}</Text>
+                <Text style={styles.text1}>{item.category}</Text>
                 <View style={{ backgroundColor: item.iconBgColor, ...styles.inIconBg }}>
                     <InProgressIcon name={item.imageName} size={12} style={{ color: item.icoColor, ...styles.inIcon }} />
                 </View>
             </View>
-            <Text style={styles.inDescription}>{item.description}</Text>
+            <Text style={styles.inDescription}>{item.title}</Text>
             <View style={styles.linearProgressBg}>
-                <LinearProgressBar percentage={item.progress} progressColor={item.progressColor} />
+                <LinearProgressBar percentage={item.percentage} progressColor={item.progressColor} />
             </View>
         </View>
     </Pressable>
@@ -49,8 +52,44 @@ const tasksGroupRenderItem = ({ item }) => (
 );
 
 const Home = () => {
-
+    const dispatch = useDispatch();
     const [userDetails, setUserDetails] = useState({});
+    const [inProgressData, setInProgressData] = useState([]);
+    const [taskData, setTaskData] = useState({});
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchTasks = async () => {
+                try {
+                    const result = await dispatch(getTasksByUserId());
+                    const inPr = result.data.filter(task => task.status === "In Progress");
+                    let taskPercentageSum = 0;
+                    let inProgress = 0;
+                    for (let index = 0; index < result.data.length; index++) {
+                        const pos = result.data[index];
+                        taskPercentageSum += pos.percentage;
+                        if (pos.status === "In Progress") {
+                            inProgress += index;
+                        }
+                    }
+                    const formattedinPrData = inPr.map(task => ({
+                        ...task,
+                        imageName: task.category === "Official" ? "suitcase-rolling" : "circle-user",
+                        color: task.category === "Official" ? Colors.skyLight : Colors.orangeLight,
+                        iconBgColor: task.category === "Official" ? Colors.inProgressIconBg : Colors.inProgressIconBg2,
+                        icoColor: task.category === "Official" ? Colors.inProgressIcon : Colors.colorPrimary,
+                        progressColor: task.category === "Official" ? Colors.blue : Colors.orange
+                    }));
+                    const taskProgress = (taskPercentageSum / result?.totalTasks);
+                    setTaskData({ inprogress: inProgress, taskPercentage: taskProgress });
+                    setInProgressData(formattedinPrData);
+                } catch (error) {
+                    console.error("TaskError ==>", error);
+                }
+            }
+            fetchTasks();
+        }, [])
+    );
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -86,7 +125,7 @@ const Home = () => {
                             <Text style={styles.taskText}>View Task</Text>
                         </TouchableOpacity>
                     </View>
-                    <CircularProgressBar percentage={85} />
+                    <CircularProgressBar percentage={taskData?.taskPercentage || 0} />
                     <Pressable style={styles.threeDotContainer}>
                         <MIcon name="dots-horizontal" size={20} color={Colors.white} />
                     </Pressable>
@@ -94,15 +133,15 @@ const Home = () => {
 
                 <View style={styles.inProgressStyle}>
                     <Text style={styles.inProgress} ellipsizeMode="tail" numberOfLines={1}>In Progress</Text>
-                    <Text style={styles.progressText}>5</Text>
+                    <Text style={styles.progressText}>{taskData?.inprogress || 0}</Text>
                 </View>
 
                 <View style={styles.inPrFlatContainer}>
                     <FlatList
-                        data={ProgressItem}
+                        data={inProgressData}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item.taskid}
                         renderItem={inProgressRenderItem} />
                 </View>
 
