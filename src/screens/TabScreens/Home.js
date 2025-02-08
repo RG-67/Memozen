@@ -11,8 +11,9 @@ import IOIcon from 'react-native-vector-icons/Ionicons';
 import { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { getTasksByUserId } from "../../redux/actions/TaskAction";
+import { getGroupTaskByUserId, getTasksByUserId } from "../../redux/actions/TaskAction";
 import { useFocusEffect } from "@react-navigation/native";
+import { getGroupByUserId } from "../../services/groupApi";
 
 
 
@@ -42,10 +43,10 @@ const tasksGroupRenderItem = ({ item }) => (
             </View>
             <View style={styles.taskTitleContainer}>
                 <Text style={styles.taskTitle}>{item.title}</Text>
-                <Text style={styles.taskDescription}>{item.totaltasks}</Text>
+                <Text style={styles.taskDescription}>{item.tasks} Tasks</Text>
             </View>
             <View style={{ alignSelf: 'flex-end' }}>
-                <TaskProgressBar percentage={item.progress} progressOuterBg={item.progressOuterColor} progressInnerBg={item.progressinnerColor} />
+                <TaskProgressBar percentage={item.percentage} progressOuterBg={item.progressOuterColor} progressInnerBg={item.progressinnerColor} />
             </View>
         </View>
     </Pressable>
@@ -56,6 +57,8 @@ const Home = () => {
     const [userDetails, setUserDetails] = useState({});
     const [inProgressData, setInProgressData] = useState([]);
     const [taskData, setTaskData] = useState({});
+    const [groupTask, setGroupTask] = useState([]);
+    const [numberOfGrTask, setNumberOfGrTask] = useState(0);
 
     useFocusEffect(
         useCallback(() => {
@@ -88,6 +91,32 @@ const Home = () => {
                 }
             }
             fetchTasks();
+        }, [])
+    );
+
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchGroupTask = async () => {
+                try {
+                    const result = await dispatch(getGroupTaskByUserId());
+                    const formattedData = result.data.map(task => ({
+                        ...task,
+                        iconName: task.category === "Official" ? "briefcase" : "book",
+                        iconBgColor: task.category === "Official" ? Colors.inProgressIconBg : Colors.orangeLight,
+                        iconColor: task.category === "Official" ? Colors.inProgressIcon : Colors.orange,
+                        progressOuterColor: task.category === "Official" ? Colors.inProgressIconBg : Colors.orangeLight,
+                        progressinnerColor: task.category === "Official" ? Colors.inProgressIcon : Colors.orange
+                    }));
+                    setGroupTask(formattedData);
+                    setNumberOfGrTask(result.totalGroupTasks);
+                    console.error("GetGroupTask ==>", groupTask);
+                }
+                catch (error) {
+                    console.error("GetGroupTaskErr ==>", error);
+                }
+            }
+            fetchGroupTask();
         }, [])
     );
 
@@ -147,15 +176,15 @@ const Home = () => {
 
                 <View style={styles.taskTextContainer}>
                     <Text style={styles.inProgress} ellipsizeMode="tail" numberOfLines={1}>Task Groups</Text>
-                    <Text style={styles.progressText}>5</Text>
+                    <Text style={styles.progressText}>{numberOfGrTask}</Text>
                 </View>
 
                 <View style={styles.taskFlatContainer}>
                     <FlatList
-                        data={taskGroupData}
+                        data={groupTask}
                         showsVerticalScrollIndicator={false}
                         ItemSeparatorComponent={() => <View style={styles.taskSeperatorContainer} />}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item.taskid}
                         renderItem={tasksGroupRenderItem}
                         nestedScrollEnabled />
                 </View>
