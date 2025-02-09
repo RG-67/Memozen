@@ -4,11 +4,13 @@ import F6Icon from 'react-native-vector-icons/FontAwesome6'
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import TaskData from "../../SampleModel/TasksData";
 import IOIcon from 'react-native-vector-icons/Ionicons';
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { getTasksByUserId } from "../../redux/actions/TaskAction";
 import { useFocusEffect } from "@react-navigation/native";
 
+
+const today = new Date().getDate();
 
 const getCurrentMontheDates = () => {
     const currentDate = new Date();
@@ -29,23 +31,30 @@ const getCurrentMontheDates = () => {
     return dates;
 }
 
-const monthList = ({ item }) => (
-    <Pressable onPress={() => { }}>
-        <View style={styles.monthContainer}>
-            <Text style={styles.monthOrDay}>{item.month}</Text>
-            <Text style={styles.day}>{item.day}</Text>
-            <Text style={styles.monthOrDay}>{item.dayShort}</Text>
-        </View>
-    </Pressable>
-);
+const monthList = ({ item }) => {
+    const isToday = item.day === today;
+    return (
+        <Pressable onPress={() => { }}>
+            <View style={[styles.monthContainer, isToday && { backgroundColor: Colors.colorPrimary }]}>
+                <Text style={[styles.monthOrDay, isToday && { color: Colors.white }]}>{item.month}</Text>
+                <Text style={[styles.day, isToday && { color: Colors.white }]}>{item.day}</Text>
+                <Text style={[styles.monthOrDay, isToday && { color: Colors.white }]}>{item.dayShort}</Text>
+            </View>
+        </Pressable>
+    )
+}
 
-const taskTagRenderItem = ({ item }) => (
-    <Pressable onPress={() => { }}>
-        <View style={styles.taskTagContainer}>
-            <Text style={styles.taskText}>{item.tag}</Text>
-        </View>
-    </Pressable>
-);
+
+const taskTagRenderItem = ({ item }) => {
+    const tag = item.tag === "All";
+    return (
+        <Pressable onPress={() => { }}>
+            <View style={[styles.taskTagContainer, tag && { backgroundColor: Colors.colorPrimary }]}>
+                <Text style={[styles.taskText, tag && { color: Colors.white }]}>{item.tag}</Text>
+            </View>
+        </Pressable>
+    )
+}
 
 const taskList = ({ item }) => (
     <Pressable onPress={() => { }}>
@@ -77,6 +86,17 @@ const Task = () => {
     const dates = getCurrentMontheDates();
     const dummyTaskText = [{ id: 1, tag: "All" }, { id: 2, tag: "To do" }, { id: 3, tag: "In Progress" }, { id: 4, tag: "Done" }, { id: 5, tag: "Collaboration" }];
 
+    const flatListRef = useRef(null);
+
+    useState(() => {
+        const todayIndex = dates.findIndex(item => item.day === today);
+        if (flatListRef.current && todayIndex !== -1) {
+            setTimeout(() => {
+                flatListRef.current.scrollToIndex({ index: todayIndex, animated: true });
+            }, 100);
+        }
+    }, [dates]);
+
 
     useFocusEffect(
         useCallback(() => {
@@ -92,7 +112,6 @@ const Task = () => {
                         tagColor: task.status === "Completed" ? Colors.colorPrimary : Colors.inProgressIcon
                     }));
                     setTaskData(formattedData);
-                    // console.error("TaskResultLatest ==>", taskData);
                 } catch (error) {
                     console.error("TaskResultErr ==>", error);
                 }
@@ -114,13 +133,16 @@ const Task = () => {
                 </View>
             </View>
 
+
             <View style={{ marginTop: 10, marginHorizontal: 10 }}>
                 <FlatList
+                    ref={flatListRef}
                     data={dates}
                     keyExtractor={(item) => item.id}
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                     ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+                    getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
                     renderItem={monthList} />
             </View>
 
