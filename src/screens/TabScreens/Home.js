@@ -110,7 +110,6 @@ const Home = () => {
                     }));
                     setGroupTask(formattedData);
                     setNumberOfGrTask(result.totalGroupTasks);
-                    console.error("GetGroupTask ==>", groupTask);
                 }
                 catch (error) {
                     console.error("GetGroupTaskErr ==>", error);

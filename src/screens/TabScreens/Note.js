@@ -4,6 +4,9 @@ import F6Icon from 'react-native-vector-icons/FontAwesome6'
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import Notes from "../../SampleModel/NotesData";
 import F5Icon from 'react-native-vector-icons/FontAwesome5';
+import { useCallback, useEffect, useState } from "react";
+import { getNotesByUserId } from "../../redux/actions/NoteActions";
+import { useDispatch } from "react-redux";
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -18,13 +21,35 @@ const noteRenderItem = ({ item }) => (
             <Text style={styles.titleStyle}>{item.title}</Text>
             <View style={styles.noteItemContainer}>
                 <F5Icon name="copy" size={20} color={item.iconColor} />
-                <Text style={styles.time}>{item.time}</Text>
+                <Text style={styles.time}>{item.createTime}</Text>
             </View>
         </View>
     </Pressable>
 );
 
 const Note = () => {
+    const dispatch = useDispatch();
+    const [notes, setNotes] = useState([]);
+
+    useEffect(() => {
+        const fetchNotes = async () => {
+            try {
+                const result = await dispatch(getNotesByUserId());
+                const formattedData = result.data.map(note => ({
+                    ...note,
+                    cardTopBg: note.tag === "Important" ? Colors.noteBgHeader1 : noteBgHeader2,
+                    cardBg: note.tag === "Important" ? Colors.noteBg1 : Colors.noteBg2,
+                    iconColor: note.tag === "Important" ? Colors.noteBgHeader1 : Colors.noteBgHeader2,
+                    title: note.title.split(" ")[0] + "....."
+                }));
+                setNotes(formattedData);
+            } catch (error) {
+                console.error("NotesErr ==>", error);
+            }
+        }
+        fetchNotes();
+    }, []);
+
     return (
         <View style={styles.mainContainer}>
 
@@ -40,8 +65,8 @@ const Note = () => {
 
             <View style={{ marginTop: 10 }}>
                 <FlatList
-                    data={Notes}
-                    keyExtractor={(item) => item.id}
+                    data={notes}
+                    keyExtractor={(item) => item.noteid}
                     columnWrapperStyle={styles.columnWrapper}
                     numColumns={NUM_COLUMNS}
                     contentContainerStyle={styles.contentContainer}
