@@ -87,9 +87,9 @@ const Task = () => {
     const dummyTaskText = [{ id: 1, tag: "All" }, { id: 2, tag: "To do" }, { id: 3, tag: "In Progress" }, { id: 4, tag: "Done" }, { id: 5, tag: "Collaboration" }];
 
     const flatListRef = useRef(null);
+    const todayIndex = dates.findIndex(item => item.day === today);
 
-    useState(() => {
-        const todayIndex = dates.findIndex(item => item.day === today);
+    useEffect(() => {
         if (flatListRef.current && todayIndex !== -1) {
             setTimeout(() => {
                 flatListRef.current.scrollToIndex({ index: todayIndex, animated: true });
@@ -142,7 +142,8 @@ const Task = () => {
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                     ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-                    getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+                    getItemLayout={(data, index) => ({ length: 80, offset: 80 * index, index })}
+                    initialScrollIndex={dates.length > 0 && todayIndex !== -1 ? todayIndex : undefined}
                     renderItem={monthList} />
             </View>
 
