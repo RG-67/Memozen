@@ -48,19 +48,21 @@ const Collaboration = ({ navigation }) => {
     }, []);
 
 
-    const groupItemRender = ({ item }) => (
-        <Pressable onPress={() => navigation.navigate('MemberScreen', { groupId: item.groupId })}>
-            <View style={styles.flatItem}>
-                <View style={styles.imageContainer}>
-                    <Image source={{ uri: item.groupImage1 }} style={[styles.imageStyle, { zIndex: 3 }]} />
-                    <Image source={{ uri: item.groupImage2 }} style={[styles.imageStyle, { marginLeft: -90, zIndex: 2 }]} />
-                    <Image source={{ uri: item.groupImage3 }} style={[styles.imageStyle, { marginLeft: -90, zIndex: 1 }]} />
+    const GroupItemRender = ({ item, navigation }) => {
+        return (
+            <Pressable onPress={() => navigation.navigate('MemberScreen', { groupId: item.groupId })}>
+                <View style={styles.flatItem}>
+                    <View style={styles.imageContainer}>
+                        <Image source={{ uri: item.groupImage1 }} style={[styles.imageStyle, { zIndex: 3 }]} />
+                        <Image source={{ uri: item.groupImage2 }} style={[styles.imageStyle, { marginLeft: -90, zIndex: 2 }]} />
+                        <Image source={{ uri: item.groupImage3 }} style={[styles.imageStyle, { marginLeft: -90, zIndex: 1 }]} />
+                    </View>
+                    <Text style={styles.groupName}>{item.groupName}</Text>
+                    <Text style={styles.member}>{item.groupMemberCount} Members</Text>
                 </View>
-                <Text style={styles.groupName}>{item.groupName}</Text>
-                <Text style={styles.member}>{item.groupMemberCount} Members</Text>
-            </View>
-        </Pressable>
-    );
+            </Pressable>
+        )
+    }
 
     return (
         <View style={styles.mainContainer}>
@@ -75,11 +77,11 @@ const Collaboration = ({ navigation }) => {
             <View style={styles.flatContainer}>
                 <FlatList
                     data={data}
-                    keyExtractor={(item) => item.userId}
+                    keyExtractor={(item) => item.groupId}
                     numColumns={NUM_COLUMNS}
                     columnWrapperStyle={styles.columnWrapperStyle}
                     contentContainerStyle={styles.contentContainerStyle}
-                    renderItem={groupItemRender}
+                    renderItem={({ item }) => <GroupItemRender item={item} navigation={navigation} />}
                 />
             </View>
 

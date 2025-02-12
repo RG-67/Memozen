@@ -10,6 +10,7 @@ import MemberScreen from '../screens/MemberScreen';
 import { useContext } from 'react';
 import { AuthContext, AuthProvider } from '../context/AuthContext';
 import ChatScreen from '../screens/ChatScreen';
+import Profile from '../screens/Profile';
 
 
 
@@ -28,6 +29,7 @@ const MainNavigator = () => {
                     <Stack.Screen name='TabNavigator' component={TabNavigator} />
                     <Stack.Screen name='MemberScreen' component={MemberScreen} />
                     <Stack.Screen name='ChatScreen' component={ChatScreen} />
+                    <Stack.Screen name='Profile' component={Profile} />
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator initialRouteName='FirstScreen' screenOptions={{ headerShown: false }}>

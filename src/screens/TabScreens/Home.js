@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { getGroupTaskByUserId, getTasksByUserId } from "../../redux/actions/TaskAction";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getGroupByUserId } from "../../services/groupApi";
 
 
@@ -53,6 +53,7 @@ const tasksGroupRenderItem = ({ item }) => (
 );
 
 const Home = () => {
+    const navigation = useNavigation();
     const dispatch = useDispatch();
     const [userDetails, setUserDetails] = useState({});
     const [inProgressData, setInProgressData] = useState([]);
@@ -132,7 +133,7 @@ const Home = () => {
         <View style={styles.mainContainer}>
 
             <View style={styles.headerStyle}>
-                <Pressable onPress={() => { }}>
+                <Pressable onPress={() => navigation.navigate('Profile')}>
                     <Image source={{ uri: userDetails?.userimage || 'https://storage.googleapis.com/pod_public/750/232853.jpg' }} style={styles.prImage} />
                 </Pressable>
                 <View style={styles.textContainer}>
