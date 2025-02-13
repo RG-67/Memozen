@@ -3,7 +3,7 @@ import Colors from "../styles/Colors";
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import groupModel from "../SampleModel/GroupModel";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getGroupMembesrByGroupId } from "../redux/actions/GroupActions";
 
 const NUM_COLUMNS = 2;
@@ -19,18 +19,25 @@ const MemberScreen = ({ route, navigation }) => {
     const [adminData, setAdminData] = useState({});
 
     useEffect(() => {
+        let isMounted = true;
         const fetchGroupMembers = async () => {
             try {
                 const { groupId } = route.params;
                 const result = await dispatch(getGroupMembesrByGroupId(groupId));
-                setAdminData(result?.data);
-                setData(result?.data?.members || []);
+                if (isMounted) {
+                    setAdminData(result?.data);
+                    setData(result?.data?.members || []);
+                }
             } catch (error) {
                 console.log("GrpMemErr ==>", error);
             }
         }
         fetchGroupMembers();
-    }, []);
+
+        return () => {
+            isMounted = false;
+        }
+    }, [route.params, dispatch]);
 
     const renderMembers = ({ item }) => (
         <Pressable onPress={() => { navigation.navigate('ChatScreen', { userId: item.userId, userName: item.userName, userImage: item.userImage || defaultImage }) }}>

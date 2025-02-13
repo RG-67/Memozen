@@ -20,8 +20,6 @@ const Collaboration = ({ navigation }) => {
     const [rooms, setRooms] = useState(null);
     const [data, setData] = useState([]);
 
-    let groupId;
-
     useEffect(() => {
         const fetchGroups = async () => {
             try {
@@ -50,7 +48,8 @@ const Collaboration = ({ navigation }) => {
 
     const GroupItemRender = ({ item, navigation }) => {
         return (
-            <Pressable onPress={() => navigation.navigate('MemberScreen', { groupId: item.groupId })}>
+            // <Pressable onPress={() => navigation.navigate('MemberScreen')}>
+            <Pressable onPress={() => navigation.navigate('MemberScreen', { groupId: item.groupId || '' })}>
                 <View style={styles.flatItem}>
                     <View style={styles.imageContainer}>
                         <Image source={{ uri: item.groupImage1 }} style={[styles.imageStyle, { zIndex: 3 }]} />
