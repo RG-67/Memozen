@@ -1,13 +1,14 @@
 import { Button, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import socket, { connectSocket, disconnectSocket } from "../../services/socketService";
 import groupModel from "../../SampleModel/GroupModel";
 import { getGroupByUser } from "../../redux/actions/GroupActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
-const Collaboration = ({ navigation }) => {
+const Collaboration = () => {
     const dispatch = useDispatch();
 
     const NUM_COLUMNS = 2;
@@ -20,36 +21,61 @@ const Collaboration = ({ navigation }) => {
     const [rooms, setRooms] = useState(null);
     const [data, setData] = useState([]);
 
+    const navigation = useNavigation();
+    const isMounted = useRef(true);
+
     useEffect(() => {
+        isMounted.current = true;
+
         const fetchGroups = async () => {
             try {
                 const userId = await AsyncStorage.getItem('userDetails');
                 const result = await dispatch(getGroupByUser(JSON.parse(userId).userid));
 
-                const formattedData = result?.data.map(group => {
-                    const defaultImage = 'https://storage.googleapis.com/pod_public/750/232853.jpg';
-                    const memberImage = group.groupData.map(member => member.userImage || defaultImage).slice(0, 3);
-                    return {
-                        ...group,
-                        groupImage1: memberImage[0] || defaultImage,
-                        groupImage2: memberImage[1] || defaultImage,
-                        groupImage3: memberImage[2] || defaultImage
-                    }
-                });
-                setRooms(result?.totalRooms);
-                setData(formattedData);
+                if (isMounted.current) {
+                    const formattedData = result?.data.map(group => {
+                        const defaultImage = 'https://storage.googleapis.com/pod_public/750/232853.jpg';
+                        const memberImage = group.groupData.map(member => member.userImage || defaultImage).slice(0, 3);
+                        return {
+                            ...group,
+                            groupImage1: memberImage[0] || defaultImage,
+                            groupImage2: memberImage[1] || defaultImage,
+                            groupImage3: memberImage[2] || defaultImage
+                        }
+                    });
+
+                    setRooms(result?.totalRooms);
+                    setData(formattedData);
+                }
             } catch (error) {
                 console.error("ErrorResult ==>", error);
             }
         };
+
         fetchGroups();
+
+        return () => {
+            isMounted.current = false;
+        };
     }, []);
 
 
-    const GroupItemRender = ({ item, navigation }) => {
+
+    /* useEffect(() => {
+        const unsubscribe = navigation.addListener('blur', () => {
+            setData(prevData => (prevData.length > 0 ? [] : prevData));
+        });
+
+        return () => unsubscribe();
+    }, [navigation]); */
+
+
+
+
+    const GroupItemRender = ({ item }) => {
         return (
             // <Pressable onPress={() => navigation.navigate('MemberScreen')}>
-            <Pressable onPress={() => navigation.navigate('MemberScreen', { groupId: item.groupId || '' })}>
+            <Pressable onPress={() => goToMemberScreen(item.groupId)}>
                 <View style={styles.flatItem}>
                     <View style={styles.imageContainer}>
                         <Image source={{ uri: item.groupImage1 }} style={[styles.imageStyle, { zIndex: 3 }]} />
@@ -62,6 +88,13 @@ const Collaboration = ({ navigation }) => {
             </Pressable>
         )
     }
+
+    const goToMemberScreen = async (groupId) => {
+        await AsyncStorage.setItem('GroupId', groupId);
+        navigation.navigate('MemberScreen');
+    };
+
+
 
     return (
         <View style={styles.mainContainer}>
@@ -76,11 +109,12 @@ const Collaboration = ({ navigation }) => {
             <View style={styles.flatContainer}>
                 <FlatList
                     data={data}
-                    keyExtractor={(item) => item.groupId}
+                    keyExtractor={(item, index) => item?.groupId?.toString() || index.toString()}
                     numColumns={NUM_COLUMNS}
                     columnWrapperStyle={styles.columnWrapperStyle}
                     contentContainerStyle={styles.contentContainerStyle}
-                    renderItem={({ item }) => <GroupItemRender item={item} navigation={navigation} />}
+                    renderItem={GroupItemRender}
+                    ListFooterComponent={<View style={{ height: 50 }} />} // Add footer here
                 />
             </View>
 

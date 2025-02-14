@@ -3,41 +3,52 @@ import Colors from "../styles/Colors";
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import groupModel from "../SampleModel/GroupModel";
 import { useDispatch } from "react-redux";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getGroupMembesrByGroupId } from "../redux/actions/GroupActions";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const NUM_COLUMNS = 2;
 const ITEM_GAP = 15;
 const WINNDOW_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = (WINNDOW_WIDTH - (ITEM_GAP * (NUM_COLUMNS + 1))) / NUM_COLUMNS;
 
-const MemberScreen = ({ route, navigation }) => {
+const MemberScreen = () => {
+    const navigation = useNavigation();
     const defaultImage = 'https://upload.wikimedia.org/wikipedia/hu/thumb/1/1d/Vegita_SSJBlue.png/250px-Vegita_SSJBlue.png';
     const defaultAdminImage = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTz8DYA1dJX3z-DCiz6NFjCfdHXatX0OEDugw&s';
     const dispatch = useDispatch();
     const [data, setData] = useState([]);
     const [adminData, setAdminData] = useState({});
 
-    useEffect(() => {
-        let isMounted = true;
+    const isMounted = useRef(true);
+
+    /* useEffect(() => {
+        isMounted.current = true;
+
         const fetchGroupMembers = async () => {
             try {
-                const { groupId } = route.params;
+                const groupId = await AsyncStorage.getItem('GroupId');
                 const result = await dispatch(getGroupMembesrByGroupId(groupId));
-                if (isMounted) {
+
+                if (isMounted.current) {
                     setAdminData(result?.data);
                     setData(result?.data?.members || []);
                 }
             } catch (error) {
-                console.log("GrpMemErr ==>", error);
+                console.error("GrpMemErr ==>", error);
             }
-        }
+        };
+
         fetchGroupMembers();
 
         return () => {
-            isMounted = false;
-        }
-    }, [route.params, dispatch]);
+            isMounted.current = false;
+        };
+    }, []); */
+
+
+
 
     const renderMembers = ({ item }) => (
         <Pressable onPress={() => { navigation.navigate('ChatScreen', { userId: item.userId, userName: item.userName, userImage: item.userImage || defaultImage }) }}>
@@ -62,14 +73,26 @@ const MemberScreen = ({ route, navigation }) => {
             )}
 
             <Text style={styles.memberStyle}>Members</Text>
-            <FlatList
+            {/* <FlatList
                 data={data}
-                keyExtractor={(item) => item.userId}
+                keyExtractor={(item, index) => item?.userId?.toString() || index.toString()}
                 numColumns={NUM_COLUMNS}
                 columnWrapperStyle={styles.columnWrapperStyle}
                 contentContainerStyle={styles.contentContainerStyle}
                 renderItem={renderMembers}
+                ListFooterComponent={<View style={{ height: 50 }} />} // Add footer here
+            /> */}
+            <FlatList
+                data={data}
+                keyExtractor={(item, index) => `member-${item?.userId?.toString() || index.toString()}`}
+                numColumns={NUM_COLUMNS}
+                columnWrapperStyle={styles.columnWrapperStyle}
+                contentContainerStyle={styles.contentContainerStyle}
+                renderItem={renderMembers}
+                ListFooterComponent={<View style={{ height: 50 }} />} // Add footer here
             />
+
+
         </View>
 
     )
