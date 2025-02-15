@@ -1,52 +1,71 @@
-import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from "react-native"
+import { BackHandler, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from "react-native"
 import Colors from "../styles/Colors";
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import groupModel from "../SampleModel/GroupModel";
 import { useDispatch } from "react-redux";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getGroupMembesrByGroupId } from "../redux/actions/GroupActions";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const NUM_COLUMNS = 2;
 const ITEM_GAP = 15;
 const WINNDOW_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = (WINNDOW_WIDTH - (ITEM_GAP * (NUM_COLUMNS + 1))) / NUM_COLUMNS;
 
-const MemberScreen = () => {
+
+const GroupMemberScreen = () => {
+    const dispatch = useDispatch();
     const navigation = useNavigation();
     const defaultImage = 'https://upload.wikimedia.org/wikipedia/hu/thumb/1/1d/Vegita_SSJBlue.png/250px-Vegita_SSJBlue.png';
     const defaultAdminImage = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTz8DYA1dJX3z-DCiz6NFjCfdHXatX0OEDugw&s';
-    const dispatch = useDispatch();
     const [data, setData] = useState([]);
     const [adminData, setAdminData] = useState({});
 
-    const isMounted = useRef(true);
-
-    /* useEffect(() => {
-        isMounted.current = true;
-
-        const fetchGroupMembers = async () => {
-            try {
-                const groupId = await AsyncStorage.getItem('GroupId');
-                const result = await dispatch(getGroupMembesrByGroupId(groupId));
-
-                if (isMounted.current) {
-                    setAdminData(result?.data);
-                    setData(result?.data?.members || []);
-                }
-            } catch (error) {
-                console.error("GrpMemErr ==>", error);
+    useEffect(() => {
+        const backAction = () => {
+            if (navigation.canGoBack()) {
+                setData([]);
+                setTimeout(() => navigation.goBack(), 100);
             }
+            return true;
         };
 
-        fetchGroupMembers();
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
 
-        return () => {
-            isMounted.current = false;
-        };
-    }, []); */
+        return () => backHandler.remove();
+    }, []);
 
+
+    useFocusEffect(
+        useCallback(() => {
+            let isMounted = true;
+    
+            const fetchGroupData = async () => {
+                try {
+                    const groupId = await AsyncStorage.getItem('GroupId');
+                    if (!groupId) return;
+                    console.log("GroupId", groupId);
+                    const result = await dispatch(getGroupMembesrByGroupId(groupId));
+                    if (isMounted) {
+                        console.log("GroupDetails", result?.data?.members);
+                        console.log("GroupDetailsAd", result?.data);
+                        setData(result?.data?.members);
+                        setAdminData(result?.data);
+                    }
+                } catch (error) {
+                    console.error("GroupError", error);
+                }
+            };
+    
+            fetchGroupData();
+    
+            return () => {
+                isMounted = false; // Cleanup when screen loses focus
+            };
+        }, [])
+    );
 
 
 
@@ -64,40 +83,28 @@ const MemberScreen = () => {
             <Text style={styles.members}>Members</Text>
             <Text style={styles.owner}>Owner</Text>
 
-            {adminData && (
-                <View style={styles.memberContainer}>
-                    <Icon name="badge" size={20} color={Colors.blue} style={{ marginStart: 10, marginTop: 10 }} />
-                    <Image source={{ uri: adminData.adminImage || defaultAdminImage }} style={styles.imageStyle} />
-                    <Text style={styles.memberName}>{adminData.adminName}</Text>
-                </View>
-            )}
+            <View style={styles.memberContainer}>
+                <Icon name="badge" size={20} color={Colors.blue} style={{ marginStart: 10, marginTop: 10 }} />
+                <Image source={{ uri: adminData.adminImage || defaultAdminImage }} style={styles.imageStyle} />
+                <Text style={styles.memberName}>{adminData.adminName}</Text>
+            </View>
 
             <Text style={styles.memberStyle}>Members</Text>
-            {/* <FlatList
-                data={data}
-                keyExtractor={(item, index) => item?.userId?.toString() || index.toString()}
-                numColumns={NUM_COLUMNS}
-                columnWrapperStyle={styles.columnWrapperStyle}
-                contentContainerStyle={styles.contentContainerStyle}
-                renderItem={renderMembers}
-                ListFooterComponent={<View style={{ height: 50 }} />} // Add footer here
-            /> */}
-            <FlatList
-                data={data}
-                keyExtractor={(item, index) => `member-${item?.userId?.toString() || index.toString()}`}
-                numColumns={NUM_COLUMNS}
-                columnWrapperStyle={styles.columnWrapperStyle}
-                contentContainerStyle={styles.contentContainerStyle}
-                renderItem={renderMembers}
-                ListFooterComponent={<View style={{ height: 50 }} />} // Add footer here
-            />
 
-
+            {data.length > 0 ? (
+                <FlatList
+                    data={data}
+                    keyExtractor={(item) => item?.userId?.toString()}
+                    numColumns={NUM_COLUMNS}
+                    columnWrapperStyle={styles.columnWrapperStyle}
+                    contentContainerStyle={styles.contentContainerStyle}
+                    renderItem={renderMembers}
+                    ListFooterComponent={<View style={{ height: 50 }} />}
+                />
+            ) : null}
         </View>
-
     )
 }
-
 
 
 const styles = StyleSheet.create({
@@ -182,4 +189,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default MemberScreen;
+export default GroupMemberScreen;

@@ -92,6 +92,7 @@ const Collaboration = () => {
     const goToMemberScreen = async (groupId) => {
         await AsyncStorage.setItem('GroupId', groupId);
         navigation.navigate('MemberScreen');
+        // navigation.navigate('GroupMemberScreen');
     };
 
 
