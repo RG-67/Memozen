@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { BackHandler, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Colors from "../styles/Colors";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,13 +10,24 @@ import { KeyboardAccessoryView } from "react-native-keyboard-accessory";
 
 
 const ChatScreen = ({ route }) => {
-
     const flatListRef = useRef(null);
     const navigation = useNavigation();
     const [senderId, setSenderId] = useState("");
     const [userDetails, setUserDetails] = useState({});
     const [messages, setMessages] = useState([]);
     const [messageText, setMessageText] = useState("");
+
+
+    /* const goBackAction = () => {
+        if (navigation.canGoBack()) {
+            setMessages([]);
+            setTimeout(() => navigation.goBack(), 100);
+        }
+        return true;
+    }
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    return () => backHandler.remove();
+} */
 
     useEffect(() => {
         const setIds = async () => {
@@ -58,14 +69,27 @@ const ChatScreen = ({ route }) => {
         }
     }, [senderId, userDetails]);
 
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+        return () => backHandler.remove();
+    }, []);
+
+    const backAction = () => {
+        if (navigation.canGoBack()) {
+            setMessages([]);
+            setTimeout(() => navigation.goBack(), 100);
+        }
+        return true;
+    }
+
     /* useEffect(() => {
         const handleMessage = (data) => {
             console.log("Received message: ", data);
             setMessages((prevMessage) => [...prevMessage, data]);
         };
-
+    
         socket.on("chatMessage", handleMessage);
-
+    
         return () => {
             socket.off("chatMessage", handleMessage);
         }
@@ -80,7 +104,7 @@ const ChatScreen = ({ route }) => {
                 message: messageText
             };
             socket.emit("sendMessage", newMessage);
-            setMessages((prevMessage) => [...prevMessage, newMessage]);
+            // setMessages((prevMessage) => [...prevMessage, newMessage]);
             setMessageText("");
 
             setTimeout(() => {
@@ -94,7 +118,7 @@ const ChatScreen = ({ route }) => {
         <View style={styles.mainContainer}>
             <View style={styles.header}>
                 <View style={styles.userHeader}>
-                    <Pressable onPress={() => navigation.goBack()} style={{ alignSelf: 'center' }}>
+                    <Pressable onPress={() => backAction()} style={{ alignSelf: 'center' }}>
                         <Icon size={30} name="keyboard-backspace" style={{ color: Colors.white }} />
                     </Pressable>
                     <Image source={{ uri: userDetails?.userImage }} style={styles.userImage} />
@@ -150,6 +174,7 @@ const ChatScreen = ({ route }) => {
             {/* </KeyboardAccessoryView> */}
         </View>
     )
+
 }
 
 
