@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Colors from "../styles/Colors";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,6 +11,7 @@ import { KeyboardAccessoryView } from "react-native-keyboard-accessory";
 
 const ChatScreen = ({ route }) => {
 
+    const flatListRef = useRef(null);
     const navigation = useNavigation();
     const [senderId, setSenderId] = useState("");
     const [userDetails, setUserDetails] = useState({});
@@ -21,9 +22,10 @@ const ChatScreen = ({ route }) => {
         const setIds = async () => {
             try {
                 const storedSenderId = await AsyncStorage.getItem('userDetails');
-                if (JSON.parse(storedSenderId).userid) {
+                const senderId = JSON.parse(storedSenderId).userid;
+                if (senderId) {
                     setUserDetails(route.params);
-                    setSenderId(storedSenderId);
+                    setSenderId(senderId);
                     connectSocket();
                 }
             } catch (error) {
@@ -39,24 +41,20 @@ const ChatScreen = ({ route }) => {
 
             const handleMessage = (data) => {
                 console.log("Received message: ", data);
-                setMessages((prevMessage) => [...prevMessage, data]);
+                setMessages((prevMessages) => [...prevMessages, data]);
+
+
+                setTimeout(() => {
+                    flatListRef.current?.scrollToEnd({ animated: true });
+                }, 100);
             };
 
             socket.on("chatMessage", handleMessage);
 
-            /* socket.on("chatMessage", (data) => {
-                console.log("Received message: ", data);
-                setMessages((prevMessage) => [...prevMessage, data]);
-            }); */
-
             return () => {
                 socket.off("chatMessage", handleMessage);
                 disconnectSocket();
-            }
-
-            /* return () => {
-                disconnectSocket();
-            } */
+            };
         }
     }, [senderId, userDetails]);
 
@@ -82,8 +80,12 @@ const ChatScreen = ({ route }) => {
                 message: messageText
             };
             socket.emit("sendMessage", newMessage);
-            // setMessages((prevMessage)     => [...prevMessage, newMessage]);
+            setMessages((prevMessage) => [...prevMessage, newMessage]);
             setMessageText("");
+
+            setTimeout(() => {
+                flatListRef.current?.scrollToEnd({ animated: true })
+            }, 100);
         }
     };
 
@@ -106,42 +108,45 @@ const ChatScreen = ({ route }) => {
             </View> */}
 
             {/* <KeyboardAvoidingView */}
-                {/* style={{ flex: 1 }} */}
-                {/* behavior={Platform.OS === 'ios' ? "padding" : "height"} */}
-                {/* keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0} */}
+            {/* style={{ flex: 1 }} */}
+            {/* behavior={Platform.OS === 'ios' ? "padding" : "height"} */}
+            {/* keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0} */}
             {/* > */}
-                <FlatList
-                    data={messages}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item }) => {
-                        const isMyMessage = String(item.sender_id) === String(senderId);
-                        return (
-                            <View style={[styles.messageContainer, isMyMessage ? styles.myMessage : styles.otherMessage]}>
-                                <Text style={styles.messageText}>{item.message}</Text>
-                            </View>
-                        )
-                    }}
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
-                    // ListFooterComponent={<View style={{ height: 20 }} />}
-                    style={{ flex: 1, marginBottom: 20 }}
-                />
+            <FlatList
+                ref={flatListRef}
+                data={messages}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => {
+                    const isMyMessage = String(item.sender_id) === String(senderId);
+                    return (
+                        <View style={[styles.messageContainer, isMyMessage ? styles.myMessage : styles.otherMessage]}>
+                            <Text style={styles.messageText}>{item.message}</Text>
+                        </View>
+                    )
+                }}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                // ListFooterComponent={<View style={{ height: 20 }} />}
+                style={{ flex: 1, marginBottom: 20 }}
+                onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
+            />
             {/* </KeyboardAvoidingView> */}
 
             {/* <KeyboardAccessoryView alwaysVisible={true}> */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10 }}>
-                    <TextInput
-                        keyboardType="default"
-                        placeholder="Message....."
-                        style={styles.chatTextBox}
-                        multiline={true}
-                        value={messageText}
-                        onChangeText={setMessageText}
-                    />
-                    <TouchableOpacity style={styles.sendBtn} onPress={sendMessage}>
-                        <Icon size={30} name="send" style={{ color: Colors.white, alignSelf: 'center' }} />
-                    </TouchableOpacity>
-                </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10 }}>
+                <TextInput
+                    keyboardType="default"
+                    placeholder="Message....."
+                    style={styles.chatTextBox}
+                    multiline={true}
+                    value={messageText}
+                    onChangeText={setMessageText}
+                />
+                <TouchableOpacity style={styles.sendBtn} onPress={sendMessage}>
+                    <Icon size={30} name="send" style={{ color: Colors.white, alignSelf: 'center' }} />
+                </TouchableOpacity>
+            </View>
             {/* </KeyboardAccessoryView> */}
         </View>
     )

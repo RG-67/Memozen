@@ -1,9 +1,8 @@
 import axios from "axios";
-import {BASE_URL, BEARER_TOKEN} from '@env';
+import { BASE_URL, BEARER_TOKEN } from '@env';
 
 const url = BASE_URL;
 const token = BEARER_TOKEN;
-
 
 const api = axios.create({
     baseURL: url,
@@ -35,7 +34,7 @@ api.interceptors.response.use(
         }
         return Promise.reject(error);
     }
-);  
+);
 
 
 export default api;

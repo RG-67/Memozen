@@ -4,7 +4,7 @@ import socket, { connectSocket, disconnectSocket } from "../services/socketServi
 
 export const SocketContext = createContext();
 
-export const SocketProvider = ({Children}) => {
+export const SocketProvider = ({children}) => {
     console.log('SocketProvider rendered');
     useEffect(() => {
         connectSocket();
@@ -16,7 +16,7 @@ export const SocketProvider = ({Children}) => {
 
     return (
         <SocketContext.Provider value={{socket}}>
-            {Children}
+            {children}
         </SocketContext.Provider>
     )
 }

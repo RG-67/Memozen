@@ -27,7 +27,9 @@ const App = () => {
         <Provider store={store}>
             <AuthProvider>
                 <GlobalProvider>
-                    <MainNavigator />
+                    <SocketProvider>
+                        <MainNavigator />
+                    </SocketProvider>
                     <GlobalLoader />
                 </GlobalProvider>
             </AuthProvider>

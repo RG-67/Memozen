@@ -11,7 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const Login = ({ navigation }) => {
-    const {setIsLoggedIn} = useContext(AuthContext);
+    const { setIsLoggedIn } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -19,9 +19,10 @@ const Login = ({ navigation }) => {
     const dispatch = useDispatch();
 
 
+
     const handleLogin = () => {
         const loginValidate = LoginValidation(email, password);
-        if(loginValidate) {
+        if (loginValidate) {
             setError(loginValidate);
         } else {
             setError('');
@@ -31,7 +32,7 @@ const Login = ({ navigation }) => {
 
     const loginUser = async () => {
         try {
-            const userData = {email, password};
+            const userData = { email, password };
             setLoading(true);
             const result = await dispatch(login(userData));
             console.log(`LoginResult ==> ${result.message}`);
@@ -40,7 +41,7 @@ const Login = ({ navigation }) => {
             // navigation.navigate('TabNavigator');
         } catch (error) {
             console.log(`Login Error ==> ${error}`);
-            Alert.alert('Failed!', error, [{text: "OK"}]);
+            Alert.alert('Failed!', error, [{ text: "OK" }]);
         }
     }
 
