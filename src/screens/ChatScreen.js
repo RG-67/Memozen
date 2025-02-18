@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import socket, { connectSocket, disconnectSocket } from "../services/socketService";
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAccessoryView } from "react-native-keyboard-accessory";
+import { getMessage, saveMessage } from "../database/messageServices";
 
 
 
@@ -48,12 +49,27 @@ const ChatScreen = ({ route }) => {
 
     useEffect(() => {
         if (senderId !== "" && userDetails?.userId) {
+            const chatId = `${senderId}_${userDetails?.userId}`;
+
+            getMessage(chatId, storedMessages => {
+                setMessages(storedMessages);
+            });
+
             socket.emit("joinRoom", { userId: senderId });
 
             const handleMessage = (data) => {
                 console.log("Received message: ", data);
-                setMessages((prevMessages) => [...prevMessages, data]);
 
+                // setMessages((prevMessages) => [...prevMessages, data]);
+
+                setMessages((prevMessages) => {
+                    const isDuplicate = prevMessages.some(msg => msg.message === data.message && msg.sender_id === data.sender_id);
+                    if(!isDuplicate) {
+                        saveMessage(chatId, data.sender_id, data.receiver_id, data.message, data.sender_id, 0);
+                        return [...prevMessages, data];
+                    }
+                    return prevMessages;
+                });
 
                 setTimeout(() => {
                     flatListRef.current?.scrollToEnd({ animated: true });
@@ -97,6 +113,7 @@ const ChatScreen = ({ route }) => {
 
 
     const sendMessage = () => {
+        const chatId = `${senderId}_${userDetails?.userId}`;
         if (messageText.trim() && senderId && userDetails?.userId) {
             const newMessage = {
                 senderId: senderId,
@@ -104,6 +121,7 @@ const ChatScreen = ({ route }) => {
                 message: messageText
             };
             socket.emit("sendMessage", newMessage);
+            saveMessage(chatId, senderId, userDetails?.userId, messageText, senderId, 1);
             // setMessages((prevMessage) => [...prevMessage, newMessage]);
             setMessageText("");
 
