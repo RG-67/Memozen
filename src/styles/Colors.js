@@ -30,7 +30,8 @@ const Colors = {
     grGreen: "#10827e",
     red: "#FF3131",
     charcoal: "#4a4a4a",
-    yellow: "#FFBF00"
+    yellow: "#FFBF00",
+    grey: "#E0E0E0"
 }
 
 export default Colors;

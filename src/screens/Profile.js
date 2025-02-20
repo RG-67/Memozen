@@ -5,10 +5,12 @@ import FIcon from 'react-native-vector-icons/Feather';
 import Colors from "../styles/Colors";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 
 
 const Profile = () => {
+    const navigation = useNavigation();
     const [userDetails, setUserDetails] = useState([]);
 
     useEffect(() => {
@@ -22,7 +24,7 @@ const Profile = () => {
     return (
         <View style={styles.mainContainer}>
             <View style={{ flexDirection: 'row', marginHorizontal: 15, marginTop: 10 }}>
-                <Pressable onPress={() => { }}><Icon size={25} name="arrow-back" style={styles.iconStyle} /></Pressable>
+                <Pressable onPress={() => { navigation.goBack()}}><Icon size={25} name="arrow-back" style={styles.iconStyle} /></Pressable>
                 <Text style={styles.textStyle}>Profile</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'center', marginStart: 20, marginTop: 20 }}>

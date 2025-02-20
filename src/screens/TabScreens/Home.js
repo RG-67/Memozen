@@ -17,24 +17,6 @@ import { getGroupByUserId } from "../../services/groupApi";
 
 
 
-const inProgressRenderItem = ({ item }) => (
-    <Pressable onPress={() => { }} style={styles.inPrFlat}>
-        <View style={{ backgroundColor: item.color, ...styles.inProgressItemContainer }}>
-            <View style={styles.inPrView1}>
-                <Text style={styles.text1}>{item.category}</Text>
-                <View style={{ backgroundColor: item.iconBgColor, ...styles.inIconBg }}>
-                    <InProgressIcon name={item.imageName} size={12} style={{ color: item.icoColor, ...styles.inIcon }} />
-                </View>
-            </View>
-            <Text style={styles.inDescription}>{item.title}</Text>
-            <View style={styles.linearProgressBg}>
-                <LinearProgressBar percentage={item.percentage} progressColor={item.progressColor} />
-            </View>
-        </View>
-    </Pressable>
-);
-
-
 const tasksGroupRenderItem = ({ item }) => (
     <Pressable onPress={() => { }}>
         <View style={styles.taskMainContainer}>
@@ -60,6 +42,24 @@ const Home = () => {
     const [taskData, setTaskData] = useState({});
     const [groupTask, setGroupTask] = useState([]);
     const [numberOfGrTask, setNumberOfGrTask] = useState(0);
+
+
+    const inProgressRenderItem = ({ item }) => (
+        <Pressable onPress={() => { navigation.navigate('UpdateTaskScreen', {taskId: item.taskid}) }} style={styles.inPrFlat}>
+            <View style={{ backgroundColor: item.color, ...styles.inProgressItemContainer }}>
+                <View style={styles.inPrView1}>
+                    <Text style={styles.text1}>{item.category}</Text>
+                    <View style={{ backgroundColor: item.iconBgColor, ...styles.inIconBg }}>
+                        <InProgressIcon name={item.imageName} size={12} style={{ color: item.icoColor, ...styles.inIcon }} />
+                    </View>
+                </View>
+                <Text style={styles.inDescription}>{item.title}</Text>
+                <View style={styles.linearProgressBg}>
+                    <LinearProgressBar percentage={item.percentage} progressColor={item.progressColor} />
+                </View>
+            </View>
+        </Pressable>
+    );
 
     useFocusEffect(
         useCallback(() => {
