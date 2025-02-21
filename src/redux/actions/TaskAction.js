@@ -1,4 +1,4 @@
-import { getGroupTask, getTasksByUser } from "../../services/taskApi";
+import { getGroupTask, getTaskById, getTasksByUser, updatePersonalTask } from "../../services/taskApi";
 
 
 
@@ -24,6 +24,32 @@ export const getGroupTaskByUserId = () => async (dispatch) => {
         return result;
     } catch (error) {
         dispatch({ type: 'GROUP_TASK_FAILURE', payload: error });
+        throw error;
+    }
+}
+
+
+export const getTaskByTaskId = (taskId) => async (dispatch) => {
+    try {
+        dispatch({ type: 'SINGLE_TASK_REQUEST' });
+        const result = await getTaskById(taskId);
+        dispatch({ type: 'SINGLE_TASK_SUCCESS', payload: result });
+        return result;
+    } catch (error) {
+        dispatch({ type: 'SINGLE_TASK_FAILURE', payload: error });
+        throw error;
+    }
+}
+
+
+export const updateTask = (taskId, title, desc, dueDate, prior, catg, stat) => async (dispatch) => {
+    try {
+        dispatch({ type: 'TASK_UPDATE_REQUEST' });
+        const result = await updatePersonalTask(taskId, title, desc, dueDate, prior, catg, stat);
+        dispatch({ type: 'TASK_UPDATE_SUCCESS', payload: result });
+        return result;
+    } catch (error) {
+        dispatch({ type: 'TASK_UPDATE_FAILURE', payload: error });
         throw error;
     }
 }
