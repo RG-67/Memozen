@@ -12,3 +12,43 @@ export const getNotes = async () => {
         throw error.response?.data?.message || error.message || 'An error occured';
     }
 }
+
+
+export const getNoteById = async (noteId) => {
+    try {
+        const userId = await AsyncStorage.getItem('userDetails');
+        const usId = JSON.parse(userId).userid;
+        const result = await api.get('note/getNoteByNoteId', { params: { userId: usId, noteId } });
+        console.log(result.data);
+        return result.data;
+    } catch (error) {
+        console.error("NoteByIdErr: ", error.response.data || error.message);
+        throw error.response?.data?.message || error.message || 'An error occurred';
+    }
+}
+
+
+export const updateNote = async (noteid, title, content, tag) => {
+    try {
+        const userid = await AsyncStorage.getItem('userDetails');
+        const usId = JSON.parse(userid).userid;
+        const result = await api.put('note/updateNote', { title: title, content: content, tag: tag }, { params: { userid: usId, noteid } });
+        return result.data;
+    } catch (error) {
+        console.error("UpdateNoteErr: ", error.response.data || error.message);
+        throw error.response?.data.message || error.message || 'An error occurred';
+    }
+}
+
+
+export const deleteNote = async (noteid) => {
+    try {
+        const userid = await AsyncStorage.getItem('userDetails');
+        const usId = JSON.parse(userid).userid;
+        const result = await api.delete('note/deleteNote', { params: { userid: usId, noteid } });
+        return result.data;
+    } catch (error) {
+        console.error("NoteByIdErr: ", error.response.data || error.message);
+        throw error.response.data?.message || error.message || 'An error occurred';
+    }
+}

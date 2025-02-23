@@ -33,9 +33,10 @@ const getCurrentMontheDates = () => {
 
 const monthList = ({ item }) => {
     const isToday = item.day === today;
+    const isPastDate = item.day < today;
     return (
         <Pressable onPress={() => { }}>
-            <View style={[styles.monthContainer, isToday && { backgroundColor: Colors.colorPrimary }]}>
+            <View style={[styles.monthContainer, isToday && { backgroundColor: Colors.colorPrimary }, isPastDate && { backgroundColor: Colors.grey }]}>
                 <Text style={[styles.monthOrDay, isToday && { color: Colors.white }]}>{item.month}</Text>
                 <Text style={[styles.day, isToday && { color: Colors.white }]}>{item.day}</Text>
                 <Text style={[styles.monthOrDay, isToday && { color: Colors.white }]}>{item.dayShort}</Text>
@@ -45,7 +46,7 @@ const monthList = ({ item }) => {
 }
 
 
-const taskTagRenderItem = ({ item }) => {
+/* const taskTagRenderItem = ({ item }) => {
     const tag = item.tag === "All";
     return (
         <Pressable onPress={() => { }}>
@@ -54,7 +55,7 @@ const taskTagRenderItem = ({ item }) => {
             </View>
         </Pressable>
     )
-}
+} */
 
 const taskList = ({ item }) => (
     <Pressable onPress={() => { }}>
@@ -83,8 +84,10 @@ const taskList = ({ item }) => (
 const Task = () => {
     const dispatch = useDispatch();
     const [taskData, setTaskData] = useState([]);
+    const [itemTag, setTag] = useState("All");
+    const [filteredList, setFilteredList] = useState([]);
     const dates = getCurrentMontheDates();
-    const dummyTaskText = [{ id: 1, tag: "All" }, { id: 2, tag: "To do" }, { id: 3, tag: "In Progress" }, { id: 4, tag: "Done" }, { id: 5, tag: "Collaboration" }];
+    const dummyTaskText = [{ id: 1, tag: "All" }, { id: 2, tag: "To do" }, { id: 3, tag: "In Progress" }, { id: 4, tag: "Completed" }, { id: 5, tag: "Collaboration" }];
 
     const flatListRef = useRef(null);
     const todayIndex = dates.findIndex(item => item.day === today);
@@ -92,10 +95,11 @@ const Task = () => {
     useEffect(() => {
         if (flatListRef.current && todayIndex !== -1) {
             setTimeout(() => {
-                flatListRef.current.scrollToIndex({ index: todayIndex, animated: true });
+                flatListRef.current.scrollToIndex({ index: todayIndex, animated: false, viewPosition: -0.8 });
             }, 100);
         }
-    }, [dates]);
+    }, [dates, todayIndex]);
+
 
 
     useFocusEffect(
@@ -112,6 +116,7 @@ const Task = () => {
                         tagColor: task.status === "Completed" ? Colors.colorPrimary : Colors.inProgressIcon
                     }));
                     setTaskData(formattedData);
+                    setFilteredList(formattedData);
                 } catch (error) {
                     console.error("TaskResultErr ==>", error);
                 }
@@ -120,6 +125,28 @@ const Task = () => {
             fetchTasks();
         }, [])
     );
+
+    const filteredTask = (selectedTask) => {
+        setTag(selectedTask);
+        if (selectedTask === "All") {
+            setFilteredList(taskData);
+        } else {
+            const filterList = taskData.filter(task => task.status === selectedTask);
+            setFilteredList(filterList);
+        }
+    }
+
+
+    const taskTagRenderItem = ({ item }) => {
+        const tag = item.tag === itemTag;
+        return (
+            <Pressable onPress={() => { filteredTask(item.tag) }}>
+                <View style={[styles.taskTagContainer, tag && { backgroundColor: Colors.colorPrimary }]}>
+                    <Text style={[styles.taskText, tag && { color: Colors.white }]}>{item.tag}</Text>
+                </View>
+            </Pressable>
+        )
+    }
 
     return (
         <View style={styles.mainContainer}>
@@ -142,8 +169,9 @@ const Task = () => {
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                     ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-                    getItemLayout={(data, index) => ({ length: 80, offset: 80 * index, index })}
-                    initialScrollIndex={dates.length > 0 && todayIndex !== -1 ? todayIndex : undefined}
+                    getItemLayout={(data, index) => ({ length: 80, offset: index * (80 + 10), index })}
+                    initialScrollIndex={todayIndex !== -1 ? Math.max(todayIndex - 2, 0) : 0}
+                    // initialScrollIndex={todayIndex !== -1 ? todayIndex : 0}
                     renderItem={monthList} />
             </View>
 
@@ -160,10 +188,18 @@ const Task = () => {
 
             <ScrollView>
                 <View style={{ marginTop: 20, marginHorizontal: 10, marginBottom: 70 }}>
-                    <FlatList
-                        data={taskData}
-                        keyExtractor={(item) => item.taskid}
-                        renderItem={taskList} />
+                    {filteredList.length > 0 ? (
+                        <FlatList
+                            data={filteredList}
+                            keyExtractor={(item) => item.taskid}
+                            renderItem={taskList} />
+                    ) : (
+                        <View style={{justifyContent: 'center', alignContent: 'center', marginTop: 50}}>
+                            <IOIcon name="clipboard-outline" size={50} style={{color: Colors.lightGrey, alignSelf: 'center'}}/>
+                            <Text style={{fontWeight: '500', fontSize: 15, alignSelf: 'center', color: Colors.lightGrey, marginTop: 10}}>No tasks available</Text>
+                        </View>
+                    )}
+
                 </View>
             </ScrollView>
 

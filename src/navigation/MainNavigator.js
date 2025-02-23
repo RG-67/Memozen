@@ -12,6 +12,7 @@ import { AuthContext, AuthProvider } from '../context/AuthContext';
 import ChatScreen from '../screens/ChatScreen';
 import Profile from '../screens/Profile';
 import UpdateTaskScreen from '../screens/UpdateTask';
+import UpdateNote from '../screens/UpdateNote';
 
 
 
@@ -32,6 +33,7 @@ const MainNavigator = () => {
                     <Stack.Screen name='ChatScreen' component={ChatScreen} />
                     <Stack.Screen name='Profile' component={Profile} />
                     <Stack.Screen name='UpdateTaskScreen' component={UpdateTaskScreen} />
+                    <Stack.Screen name='UpdateNote' component={UpdateNote} />
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator initialRouteName='FirstScreen' screenOptions={{ headerShown: false }}>
