@@ -1,4 +1,6 @@
-import { deleteNote, getNoteById, getNotes, updateNote } from "../../services/noteApi";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createNote, deleteNote, getNoteById, getNotes, updateNote } from "../../services/noteApi";
+import api from "../../services/api";
 
 
 
@@ -48,6 +50,19 @@ export const deleteNoteById = (noteid) => async (dispatch) => {
         return result;
     } catch (error) {
         dispatch({ type: 'DELETE_NOTE_FAILURE', payload: error });
+        throw error;
+    }
+}
+
+
+export const createUserNote = (title, content, tag) => async (dispatch) => {
+    try {
+        dispatch({ type: 'CREATE_NOTE_REQUEST' });
+        const result = await createNote(title, content, tag);
+        dispatch({ type: 'CREATE_NOTE_SUCCESS', payload: result });
+        return result;
+    } catch (error) {
+        dispatch({ type: 'CREATE_NOTE_FAILURE', payload: error });
         throw error;
     }
 }

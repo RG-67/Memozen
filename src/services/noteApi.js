@@ -52,3 +52,16 @@ export const deleteNote = async (noteid) => {
         throw error.response.data?.message || error.message || 'An error occurred';
     }
 }
+
+
+export const createNote = async (title, content, tag) => {
+    try {
+        const userId = await AsyncStorage.getItem('userDetails');
+        const usId = JSON.parse(userId).userid;
+        const result = await api.post('note/createNote', { userid: usId, title: title, content: content, tag: tag });
+        return result.data;
+    } catch (error) {
+        console.error("CreateNoteErr: ", error.response?.data || error.message);
+        throw error.response?.data.message || error.message || 'An error occurred';
+    }
+}

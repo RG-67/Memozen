@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Colors from "../styles/Colors";
 import { Picker } from "@react-native-picker/picker";
-import { deleteNoteById, getNoteByNoteId, updateNoteById } from "../redux/actions/NoteActions";
+import { createUserNote, deleteNoteById, getNoteByNoteId, updateNoteById } from "../redux/actions/NoteActions";
 import { noteUpdateValidation } from "../hooks/NoteValidation";
 import { dateConverter } from "../utility/Converter";
 
@@ -21,24 +21,36 @@ const UpdateNote = () => {
     const [desc, setDesc] = useState("");
     const [createDate, setCreateDate] = useState("");
     const [tag, setTag] = useState("");
+    const [from, setFrom] = useState("");
 
 
     useFocusEffect(
         useCallback(() => {
             const getNote = async () => {
-                const { noteId } = route.params;
-                const result = await dispatch(getNoteByNoteId(noteId));
-                if (result) {
-                    const date = new Date(result.data.updated_at).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric"
-                    })
-                    // setNote(result.data);
-                    setTitle(result.data.title);
-                    setDesc(result.data.content);
-                    setCreateDate(date);
-                    setTag(result.data.tag);
+                const { from, noteId } = route.params;
+                setFrom(from);
+                if (from === "update") {
+                    const result = await dispatch(getNoteByNoteId(noteId));
+                    if (result) {
+                        const date = new Date(result.data.updated_at).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric"
+                        })
+                        // setNote(result.data);
+                        setTitle(result.data.title);
+                        setDesc(result.data.content);
+                        setCreateDate(date);
+                        setTag(result.data.tag);
+                    }
+                } else {
+                    const date = new Date();
+                    const formattedDate = date.toLocaleString("en-GB", {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                    setCreateDate(formattedDate);
                 }
             }
             getNote();
@@ -48,7 +60,8 @@ const UpdateNote = () => {
     const noteValidation = () => {
         const validation = noteUpdateValidation(desc);
         if (validation) return ToastAndroid.show(validation, ToastAndroid.SHORT);
-        else updateNote();
+        else if (from === "update") updateNote();
+        else createNote();
     }
 
     const updateNote = async () => {
@@ -59,6 +72,16 @@ const UpdateNote = () => {
             navigation.goBack();
         } catch (error) {
             console.error("UpdateNoteScreenErr: ", error);
+        }
+    }
+
+    const createNote = async () => {
+        try {
+            const result = await dispatch(createUserNote(title, desc, tag));
+            ToastAndroid.show(result.message, ToastAndroid.SHORT);
+            navigation.goBack();
+        } catch (error) {
+            console.error("CreateNoteErr: ", error);
         }
     }
 
@@ -124,7 +147,11 @@ const UpdateNote = () => {
                     {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}> */}
 
                     <View>
-                        <Text style={{ ...styles.textStyle }}>Create Date</Text>
+                        {from === "update" ? (
+                            <Text style={{ ...styles.textStyle }}>Create Date</Text>
+                        ) : (
+                            <Text style={{ ...styles.textStyle }}>Date</Text>
+                        )}
                         <Pressable onPress={() => { }}>
                             <View style={{ ...styles.inputStyle, flexDirection: 'row', paddingStart: 5, paddingEnd: 5, justifyContent: 'space-between' }}>
                                 <TextInput style={{ fontSize: 14, fontWeight: '400', width: 120, height: 40 }}
@@ -153,14 +180,25 @@ const UpdateNote = () => {
                     {/* </View> */}
 
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, marginBottom: 20 }}>
-                        <TouchableOpacity style={{ ...styles.btnStyle, backgroundColor: Colors.red }} onPress={() => showAlert()}>
-                            <Text style={styles.btnTextStyle}>Delete</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ ...styles.btnStyle, backgroundColor: Colors.grGreen }} onPress={() => { noteValidation() }}>
-                            <Text style={styles.btnTextStyle}>Update</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {from === "update" ? (
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, marginBottom: 20 }}>
+                            <TouchableOpacity style={{ ...styles.btnStyle, backgroundColor: Colors.red }} onPress={() => showAlert()}>
+                                <Text style={styles.btnTextStyle}>Delete</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ ...styles.btnStyle, backgroundColor: Colors.grGreen }} onPress={() => { noteValidation() }}>
+                                <Text style={styles.btnTextStyle}>Update</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, marginBottom: 20 }}>
+                            <TouchableOpacity style={{ ...styles.btnStyle, borderWidth: 1, borderColor: Colors.red }} onPress={() => navigation.goBack()}>
+                                <Text style={{ ...styles.btnTextStyle, color: Colors.red }}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ ...styles.btnStyle, backgroundColor: Colors.colorPrimary }} onPress={() => { noteValidation() }}>
+                                <Text style={styles.btnTextStyle}>Save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
 
 
                 </View>

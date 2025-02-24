@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Dimensions, FlatList, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
 import F6Icon from 'react-native-vector-icons/FontAwesome6'
 import MIcon from 'react-native-vector-icons/MaterialIcons';
@@ -64,7 +64,7 @@ const Note = () => {
 
 
     const noteRenderItem = ({ item }) => (
-        <Pressable onPress={() => { navigation.navigate('UpdateNote', { noteId: item.noteid }) }}>
+        <Pressable onPress={() => { navigation.navigate('UpdateNote', { from: "update", noteId: item.noteid }) }}>
             <View style={{ backgroundColor: item.cardBg, ...styles.noteMainContainer }}>
                 <View style={{ height: 10, backgroundColor: item.cardTopBg, borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
                 <Text style={styles.titleStyle}>{item.title}</Text>
@@ -83,12 +83,18 @@ const Note = () => {
                 {/* <Pressable onPress={() => { }}>
                     <F6Icon name="arrow-left-long" size={25} />
                 </Pressable> */}
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.heading}>Notes</Text>
-                </View>
+                {/* <View style={{ flex: 1, justifyContent: 'center'}}> */}
+                <Text style={styles.heading}>Notes</Text>
+                {/* </View> */}
                 {/* <View>
                     <MIcon name="notifications" size={30} />
                 </View> */}
+                <View>
+                    <TouchableOpacity style={styles.addBtnStyle} onPress={() => navigation.navigate('UpdateNote', { from: "create", noteId: "" })}>
+                        <MIcon name="edit-note" size={25} style={{ color: Colors.white }} />
+                        <Text style={{ fontSize: 14, fontWeight: '500', color: Colors.white }}>Add Note</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <View style={{ marginTop: 20 }}>
@@ -108,6 +114,7 @@ const Note = () => {
                     </View>
                 )}
             </View>
+
 
         </View>
     )
@@ -130,7 +137,9 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: Colors.black,
         alignSelf: 'center',
-        textAlign: 'center',
+        textAlign: 'right',
+        flex: 1,
+        marginEnd: 50
     },
     noteMainContainer: {
         borderRadius: 10,
@@ -165,6 +174,19 @@ const styles = StyleSheet.create({
     contentContainer: {
         paddingHorizontal: ITEM_GAP,
         paddingBottom: ITEM_GAP
+    },
+    addBtnStyle: {
+        width: 100,
+        height: 40,
+        justifyContent: 'center',
+        alignContent: 'center',
+        backgroundColor: Colors.green,
+        borderRadius: 10,
+        // position: 'absolute',
+        // bottom: 80,
+        // right: 10,
+        alignItems: 'center',
+        flexDirection: 'row'
     }
 });
 
