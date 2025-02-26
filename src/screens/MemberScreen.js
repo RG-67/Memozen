@@ -41,28 +41,32 @@ const GroupMemberScreen = () => {
     useFocusEffect(
         useCallback(() => {
             let isMounted = true;
-    
+
             const fetchGroupData = async () => {
                 try {
                     const groupId = await AsyncStorage.getItem('GroupId');
                     if (!groupId) return;
-                    console.log("GroupId", groupId);
                     const result = await dispatch(getGroupMembesrByGroupId(groupId));
                     if (isMounted) {
-                        console.log("GroupDetails", result?.data?.members);
-                        console.log("GroupDetailsAd", result?.data);
-                        setData(result?.data?.members);
+                        const membersData = result?.data?.members.filter(member => member.userId !== result?.data?.adminId).map(member => ({
+                            userId: member.userId,
+                            userName: member.userName,
+                            userImage: member.userImage,
+                            userImageId: member.userImageId
+                        }))
+                        setData(membersData);
+                        console.log("DataData ==>", membersData);
                         setAdminData(result?.data);
                     }
                 } catch (error) {
                     console.error("GroupError", error);
                 }
             };
-    
+
             fetchGroupData();
-    
+
             return () => {
-                isMounted = false; // Cleanup when screen loses focus
+                isMounted = false;
             };
         }, [])
     );
