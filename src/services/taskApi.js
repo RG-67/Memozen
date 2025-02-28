@@ -50,3 +50,15 @@ export const updatePersonalTask = async (taskId, title, desc, dueDate, prior, ca
         throw error.response?.data || error.message;
     }
 }
+
+
+export const getGroupTaskPerPerson = async (taskid) => {
+    try {
+        const userid = await AsyncStorage.getItem('userDetails');
+        const result = await api.get('task/getGroupTaskPerUser', { params: { userid: JSON.parse(userid).userid, taskid } });
+        return result.data;
+    } catch (error) {
+        console.error("GetGrpTaskByUserErr: ", error.response?.data || error.message);
+        throw error.response?.data || error.message;
+    }
+}

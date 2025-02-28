@@ -16,24 +16,6 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getGroupByUserId } from "../../services/groupApi";
 
 
-
-const tasksGroupRenderItem = ({ item }) => (
-    <Pressable onPress={() => { }}>
-        <View style={styles.taskMainContainer}>
-            <View style={{ backgroundColor: item.iconBgColor, ...styles.taskIconBg }}>
-                <IOIcon name={item.iconName} size={25} color={item.iconColor} />
-            </View>
-            <View style={styles.taskTitleContainer}>
-                <Text style={styles.taskTitle}>{item.title}</Text>
-                <Text style={styles.taskDescription}>{item.tasks} Tasks</Text>
-            </View>
-            <View style={{ alignSelf: 'flex-end' }}>
-                <TaskProgressBar percentage={item.percentage} progressOuterBg={item.progressOuterColor} progressInnerBg={item.progressinnerColor} />
-            </View>
-        </View>
-    </Pressable>
-);
-
 const Home = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -44,8 +26,28 @@ const Home = () => {
     const [numberOfGrTask, setNumberOfGrTask] = useState(0);
 
 
+    const tasksGroupRenderItem = ({ item }) => {
+        return (
+            <Pressable onPress={() => { navigation.navigate('GroupTaskScreen', { groupid: item?.group_id, taskid: item?.taskid, from: "Home" }) }}>
+                <View style={styles.taskMainContainer}>
+                    <View style={{ backgroundColor: item.iconBgColor, ...styles.taskIconBg }}>
+                        <IOIcon name={item.iconName} size={25} color={item.iconColor} />
+                    </View>
+                    <View style={styles.taskTitleContainer}>
+                        <Text style={styles.taskTitle}>{item.title}</Text>
+                        <Text style={styles.taskDescription}>{item.tasks} Tasks</Text>
+                    </View>
+                    <View style={{ alignSelf: 'flex-end' }}>
+                        <TaskProgressBar percentage={item.percentage} progressOuterBg={item.progressOuterColor} progressInnerBg={item.progressinnerColor} />
+                    </View>
+                </View>
+            </Pressable>
+        )
+    };
+
+
     const inProgressRenderItem = ({ item }) => (
-        <Pressable onPress={() => { navigation.navigate('UpdateTaskScreen', {taskId: item.taskid}) }} style={styles.inPrFlat}>
+        <Pressable onPress={() => { navigation.navigate('UpdateTaskScreen', { taskId: item.taskid }) }} style={styles.inPrFlat}>
             <View style={{ backgroundColor: item.color, ...styles.inProgressItemContainer }}>
                 <View style={styles.inPrView1}>
                     <Text style={styles.text1}>{item.category}</Text>

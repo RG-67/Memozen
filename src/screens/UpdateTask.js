@@ -185,7 +185,6 @@ const UpdateTaskScreen = () => {
                                     selectedValue={status}
                                     onValueChange={(item) => setStatus(item)}>
                                     <Picker.Item label="Pending" value="Pending" />
-                                    <Picker.Item label="Initiated" value="Initiated" />
                                     <Picker.Item label="In Progress" value="In Progress" />
                                     <Picker.Item label="Completed" value="Completed" />
                                 </Picker>

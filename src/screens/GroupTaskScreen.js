@@ -1,25 +1,33 @@
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native"
-import Icon from 'react-native-vector-icons';
+import { Pressable, StyleSheet, Text, View } from "react-native"
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Colors from "../styles/Colors";
+import { useDispatch } from "react-redux";
+import { getGroupTaskByUser } from "../redux/actions/TaskAction";
 
 
 
 const GroupTaskScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const [where, setFrom] = useState();
+    const dispatch = useDispatch();
+    const [where, setFrom] = useState("Home");
+    const [taskData, setTaskData] = useState([]);
 
 
     useFocusEffect(
         useCallback(() => {
             const fetchGroupTaks = async () => {
                 try {
-                    const { from } = route.params;
-                    setFrom(from);
+                    const { groupid, taskid, from } = route.params;
+                    const result = await dispatch(getGroupTaskByUser(taskid));
+                    if (result.data.length > 0) {
+                        console.log("GrpTsk: ", result);
+                    }
+                    // setFrom(from);
                 } catch (error) {
-
+                    console.error("GrpTskErr: ", error);
                 }
             }
             fetchGroupTaks();
@@ -37,6 +45,7 @@ const GroupTaskScreen = () => {
             </View>
             {where === "Home" ? (
                 <>
+
                 </>
             ) : (
                 <>
