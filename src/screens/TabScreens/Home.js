@@ -5,7 +5,7 @@ import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CircularProgressBar, { TaskProgressBar } from "../../components/CircularProgressbar";
 import ProgressItem from "../../SampleModel/InProgressData";
 import InProgressIcon from 'react-native-vector-icons/FontAwesome6'
-import LinearProgressBar from "../../components/LinearProgressBar";
+import { LinearProgressBar } from "../../components/LinearProgressBar";
 import taskGroupData from "../../SampleModel/TasksGroupData";
 import IOIcon from 'react-native-vector-icons/Ionicons';
 import { useCallback, useEffect, useState } from "react";
