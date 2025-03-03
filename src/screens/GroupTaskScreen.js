@@ -1,13 +1,14 @@
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { BackHandler, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from "react-native"
+import { BackHandler, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from "react-native"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Colors from "../styles/Colors";
 import { useDispatch } from "react-redux";
 import { getGroupTaskByUser } from "../redux/actions/TaskAction";
 import { LinearProgressBar, TaskLinearProgressBar } from "../components/LinearProgressBar";
 import { Picker } from "@react-native-picker/picker";
-import CircularProgressBar, { TaskProgressBar } from "../components/CircularProgressbar";
+import CircularProgressBar, { MemberTaskProgressBar, TaskProgressBar } from "../components/CircularProgressbar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const ITEM_GAP = 10;
@@ -26,6 +27,7 @@ const GroupTaskScreen = () => {
     const [groupId, setGroupId] = useState("");
     const [taskDetails, setTaskDetails] = useState({});
     const [status, setStatus] = useState("");
+    const [userDetails, setUserDetails] = useState({});
 
 
 
@@ -42,6 +44,8 @@ const GroupTaskScreen = () => {
 
     const fetchGroupTaks = async () => {
         try {
+            const userDetails = await AsyncStorage.getItem('userDetails');
+            setUserDetails(userDetails);
             const { groupid, taskid, from } = route.params;
             const result = await dispatch(getGroupTaskByUser(taskid));
             const colorPattern = [Colors.orangeLight, Colors.skyLight, Colors.skyLight, Colors.orangeLight];
@@ -137,6 +141,7 @@ const GroupTaskScreen = () => {
                 </View>
             ) : (
                 <View>
+
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, marginHorizontal: 10 }}>
                         <Text style={{ fontSize: 25, fontWeight: 'bold', color: Colors.black, alignSelf: 'center', textAlign: 'center' }}>{taskId}</Text>
                         <View style={{ width: 150, height: 30, borderRadius: 10, backgroundColor: Colors.orangeLight, alignSelf: 'center', justifyContent: 'center', alignContent: 'center' }}>
@@ -151,13 +156,24 @@ const GroupTaskScreen = () => {
                         </View>
                     </View>
 
-                    <View style={{justifyContent: 'space-between', /* marginHorizontal: 10, */ marginTop: 20, flexDirection: 'row'}}>
-                        <View>
-                            <Text style={{fontSize: 18, fontWeight: 'bold', color: Colors.black}}>{taskDetails.title}</Text>
-                            <Text style={{fontSize: 16, fontWeight: '500', color: Colors.black, marginTop: 10}}>{taskDetails.description}</Text>
+                    <View style={{ justifyContent: 'space-between', /* marginHorizontal: 10, */ marginTop: 25, flexDirection: 'row' }}>
+                        <View style={{ marginStart: 10, flex: 1 }}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.black, textDecorationLine: 'underline' }}>{taskDetails.title}</Text>
+                            <Text style={{ fontSize: 16, fontWeight: '500', color: Colors.black, marginTop: 10 }}>{taskDetails.description}</Text>
                         </View>
-                        <TaskProgressBar percentage={taskDetails.progress} progressOuterBg={Colors.lightestPurple} progressInnerBg={Colors.colorPrimary}/>
+                        <View style={{ flex: 0.5, justifyContent: 'flex-end', alignContent: 'flex-end', alignItems: 'flex-end', marginEnd: 10 }}>
+                            <MemberTaskProgressBar percentage={taskDetails.progress} progressOuterBg={Colors.lightestPurple} progressInnerBg={Colors.colorPrimary} />
+                        </View>
                     </View>
+
+                    <View style={{ flex: 1, marginTop: 15, marginBottom: 20, borderRadius: 10, marginHorizontal: 10, padding: 10, borderWidth: 1, borderColor: Colors.grey }}>
+                        <Text style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}>Comment</Text>
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            {/* <Image source={{ uri: JSON.parse(userDetails).userimage }} /> */}
+                        </View>
+                    </View>
+
                 </View>
             )}
 
