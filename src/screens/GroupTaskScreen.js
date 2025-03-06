@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { BackHandler, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from "react-native"
+import { BackHandler, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Colors from "../styles/Colors";
 import { useDispatch } from "react-redux";
@@ -16,6 +16,8 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const NUMBER_OF_COLUMNS = 2;
 const ITEM_WIDTH = (SCREEN_WIDTH - ITEM_GAP * (NUMBER_OF_COLUMNS + 1)) / NUMBER_OF_COLUMNS;
 
+const messageBoxWidth = SCREEN_WIDTH - 140;
+
 
 const GroupTaskScreen = () => {
     const route = useRoute();
@@ -28,6 +30,7 @@ const GroupTaskScreen = () => {
     const [taskDetails, setTaskDetails] = useState({});
     const [status, setStatus] = useState("");
     const [userDetails, setUserDetails] = useState({});
+    const [userImage, setUserImage] = useState('');
 
 
 
@@ -44,8 +47,9 @@ const GroupTaskScreen = () => {
 
     const fetchGroupTaks = async () => {
         try {
-            const userDetails = await AsyncStorage.getItem('userDetails');
-            setUserDetails(userDetails);
+            const userDt = await AsyncStorage.getItem('userDetails');
+            setUserDetails(userDt);
+            setUserImage(JSON.parse(userDt).userimage || 'https://storage.googleapis.com/pod_public/750/232853.jpg');
             const { groupid, taskid, from } = route.params;
             const result = await dispatch(getGroupTaskByUser(taskid));
             const colorPattern = [Colors.orangeLight, Colors.skyLight, Colors.skyLight, Colors.orangeLight];
@@ -166,11 +170,24 @@ const GroupTaskScreen = () => {
                         </View>
                     </View>
 
-                    <View style={{ flex: 1, marginTop: 15, marginBottom: 20, borderRadius: 10, marginHorizontal: 10, padding: 10, borderWidth: 1, borderColor: Colors.grey }}>
+                    <View style={{ marginTop: 15, marginBottom: 20, borderRadius: 10, marginHorizontal: 10, padding: 10, borderWidth: 1, 
+                        borderColor: Colors.grey}}>
                         <Text style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}>Comment</Text>
 
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            {/* <Image source={{ uri: JSON.parse(userDetails).userimage }} /> */}
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                            <Image source={{ uri: userImage }}
+                                style={{ width: 40, height: 40, borderRadius: 50 }} />
+                            <TextInput
+                                keyboardType="default"
+                                placeholder="Message....."
+                                style={styles.commentBox}
+                                multiline={true}
+                            // value={messageText}
+                            // onChangeText={setMessageText}
+                            />
+                            <Pressable style={styles.sendBtn} /* onPress={sendMessage} */>
+                                <Icon size={20} name="send" style={{ color: Colors.white, alignSelf: 'center' }} />
+                            </Pressable>
                         </View>
                     </View>
 
@@ -211,7 +228,26 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: ITEM_GAP,
         elevation: 2
-    }
+    },
+    commentBox: {
+        width: messageBoxWidth,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: Colors.colorSecondary,
+        backgroundColor: Colors.white,
+        padding: 5,
+        minHeight: 20,
+        marginHorizontal: 10,
+    },
+    sendBtn: {
+        height: 40,
+        width: 40,
+        borderRadius: 50,
+        backgroundColor: Colors.colorPrimary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center'
+    },
 });
 
 
