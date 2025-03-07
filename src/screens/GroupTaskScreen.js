@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { BackHandler, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { BackHandler, Dimensions, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Colors from "../styles/Colors";
 import { useDispatch } from "react-redux";
@@ -13,10 +13,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ITEM_GAP = 10;
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const NUMBER_OF_COLUMNS = 2;
 const ITEM_WIDTH = (SCREEN_WIDTH - ITEM_GAP * (NUMBER_OF_COLUMNS + 1)) / NUMBER_OF_COLUMNS;
 
+
 const messageBoxWidth = SCREEN_WIDTH - 140;
+// const commentBoxHeight = SCREEN_HEIGHT - 55;
 
 
 const GroupTaskScreen = () => {
@@ -123,84 +126,106 @@ const GroupTaskScreen = () => {
         )
     }
 
+    {/* <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 20}
+            style={styles.container}> */}
+        
+        // </KeyboardAvoidingView>
 
     return (
-        <View style={styles.mainContainer}>
-            <View style={{ flexDirection: 'row', marginHorizontal: 10, marginTop: 10 }}>
-                <Pressable onPress={() => { backAction() }} style={styles.backBtn}>
-                    <Icon name="arrow-back" size={25} style={{ alignSelf: 'center' }} />
-                </Pressable>
-                <Text style={styles.title}>Group Task</Text>
+        
+
+        
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+            <View style={styles.mainContainer}>
+                <View style={{ flexDirection: 'row', marginHorizontal: 10, marginTop: 10 }}>
+                    <Pressable onPress={() => { backAction() }} style={styles.backBtn}>
+                        <Icon name="arrow-back" size={25} style={{ alignSelf: 'center' }} />
+                    </Pressable>
+                    <Text style={styles.title}>Group Task</Text>
+                </View>
+                {where === "Home" ? (
+                    <View style={{ marginVertical: 20 }}>
+                        <FlatList
+                            data={taskData}
+                            numColumns={NUMBER_OF_COLUMNS}
+                            columnWrapperStyle={{ justifyContent: 'space-between' }}
+                            contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 10 }}
+                            keyExtractor={(item) => item.id}
+                            renderItem={renderTaskList}
+                        />
+                    </View>
+                ) : (
+                    <View style={{ flex: 1 }}>
+
+                        <View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, marginHorizontal: 10 }}>
+                                <Text style={{ fontSize: 25, fontWeight: 'bold', color: Colors.black, alignSelf: 'center', textAlign: 'center' }}>{taskId}</Text>
+                                <View style={{ width: 150, height: 30, borderRadius: 10, backgroundColor: Colors.orangeLight, alignSelf: 'center', justifyContent: 'center', alignContent: 'center' }}>
+                                    <Picker
+                                        style={{ padding: 10 }}
+                                        selectedValue={taskDetails.status}
+                                        onValueChange={(item) => setStatus(item)}>
+                                        <Picker.Item label="Pending" value="Pending" style={{ color: Colors.black, fontWeight: '500' }} />
+                                        <Picker.Item label="In Progress" value="In Progress" />
+                                        <Picker.Item label="Completed" value="Completed" />
+                                    </Picker>
+                                </View>
+                            </View>
+
+                            <View style={{ justifyContent: 'space-between', /* marginHorizontal: 10, */ marginTop: 25, flexDirection: 'row' }}>
+                                <View style={{ marginStart: 10, flex: 1 }}>
+                                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.black, textDecorationLine: 'underline' }}>{taskDetails.title}</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '500', color: Colors.black, marginTop: 10 }}>{taskDetails.description}</Text>
+                                </View>
+                                <View style={{ flex: 0.5, justifyContent: 'flex-end', alignContent: 'flex-end', alignItems: 'flex-end', marginEnd: 10 }}>
+                                    <MemberTaskProgressBar percentage={taskDetails.progress} progressOuterBg={Colors.lightestPurple} progressInnerBg={Colors.colorPrimary} />
+                                </View>
+                            </View>
+                        </View>
+
+
+                        <View style={{
+                            flex: 1, marginBottom: 20,
+                            marginTop: 15, borderRadius: 10, marginHorizontal: 10, padding: 10, borderWidth: 1,
+                            borderColor: Colors.grey
+                        }}>
+                            <Text style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}>Comment</Text>
+
+                            <View style={styles.commentContainer}>
+                                <Image source={{ uri: userImage }}
+                                    style={{ width: 40, height: 40, borderRadius: 50 }} />
+                                <TextInput
+                                    keyboardType="default"
+                                    placeholder="Message....."
+                                    style={styles.commentBox}
+                                    multiline={true}
+                                // value={messageText}
+                                // onChangeText={setMessageText}
+                                />
+                                <Pressable style={styles.sendBtn} /* onPress={sendMessage} */>
+                                    <Icon size={20} name="send" style={{ color: Colors.colorPrimary, alignSelf: 'center' }} />
+                                </Pressable>
+                            </View>
+                        </View>
+
+
+                    </View>
+                )}
+
             </View>
-            {where === "Home" ? (
-                <View style={{ marginVertical: 20 }}>
-                    <FlatList
-                        data={taskData}
-                        numColumns={NUMBER_OF_COLUMNS}
-                        columnWrapperStyle={{ justifyContent: 'space-between' }}
-                        contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 10 }}
-                        keyExtractor={(item) => item.id}
-                        renderItem={renderTaskList}
-                    />
-                </View>
-            ) : (
-                <View>
-
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, marginHorizontal: 10 }}>
-                        <Text style={{ fontSize: 25, fontWeight: 'bold', color: Colors.black, alignSelf: 'center', textAlign: 'center' }}>{taskId}</Text>
-                        <View style={{ width: 150, height: 30, borderRadius: 10, backgroundColor: Colors.orangeLight, alignSelf: 'center', justifyContent: 'center', alignContent: 'center' }}>
-                            <Picker
-                                style={{ padding: 10 }}
-                                selectedValue={taskDetails.status}
-                                onValueChange={(item) => setStatus(item)}>
-                                <Picker.Item label="Pending" value="Pending" style={{ color: Colors.black, fontWeight: '500' }} />
-                                <Picker.Item label="In Progress" value="In Progress" />
-                                <Picker.Item label="Completed" value="Completed" />
-                            </Picker>
-                        </View>
-                    </View>
-
-                    <View style={{ justifyContent: 'space-between', /* marginHorizontal: 10, */ marginTop: 25, flexDirection: 'row' }}>
-                        <View style={{ marginStart: 10, flex: 1 }}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.black, textDecorationLine: 'underline' }}>{taskDetails.title}</Text>
-                            <Text style={{ fontSize: 16, fontWeight: '500', color: Colors.black, marginTop: 10 }}>{taskDetails.description}</Text>
-                        </View>
-                        <View style={{ flex: 0.5, justifyContent: 'flex-end', alignContent: 'flex-end', alignItems: 'flex-end', marginEnd: 10 }}>
-                            <MemberTaskProgressBar percentage={taskDetails.progress} progressOuterBg={Colors.lightestPurple} progressInnerBg={Colors.colorPrimary} />
-                        </View>
-                    </View>
-
-                    <View style={{ marginTop: 15, marginBottom: 20, borderRadius: 10, marginHorizontal: 10, padding: 10, borderWidth: 1, 
-                        borderColor: Colors.grey}}>
-                        <Text style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}>Comment</Text>
-
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
-                            <Image source={{ uri: userImage }}
-                                style={{ width: 40, height: 40, borderRadius: 50 }} />
-                            <TextInput
-                                keyboardType="default"
-                                placeholder="Message....."
-                                style={styles.commentBox}
-                                multiline={true}
-                            // value={messageText}
-                            // onChangeText={setMessageText}
-                            />
-                            <Pressable style={styles.sendBtn} /* onPress={sendMessage} */>
-                                <Icon size={20} name="send" style={{ color: Colors.white, alignSelf: 'center' }} />
-                            </Pressable>
-                        </View>
-                    </View>
-
-                </View>
-            )}
-
-        </View>
+        </ScrollView>
+        
     )
 }
 
 
 
 const styles = StyleSheet.create({
+    container: {
+        /* flex: 1,
+        backgroundColor: Colors.white */
+    },
     mainContainer: {
         flex: 1,
         backgroundColor: Colors.white
@@ -243,11 +268,20 @@ const styles = StyleSheet.create({
         height: 40,
         width: 40,
         borderRadius: 50,
-        backgroundColor: Colors.colorPrimary,
+        borderColor: Colors.colorPrimary,
+        borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center'
     },
+    commentContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        position: 'absolute',
+        bottom: 10,
+        left: 10,
+        right: 10
+    }
 });
 
 
