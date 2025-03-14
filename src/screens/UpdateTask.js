@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     inputStyle: {
         color: Colors.black,
         borderWidth: 1.5,
-        borderColor: Colors.charcoal,
+        borderColor: Colors.deepGrey,
         borderRadius: 5,
         marginTop: 5
     },

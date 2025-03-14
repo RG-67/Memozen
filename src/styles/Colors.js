@@ -36,7 +36,8 @@ const Colors = {
     lightRed: "#E97451",
     thirdRed: "#D70040",
     progressPurple: "#702963",
-    progressGreen: "#009E60"
+    progressGreen: "#009E60",
+    deepGrey: "#C0C0C0"
 }
 
 export default Colors;
