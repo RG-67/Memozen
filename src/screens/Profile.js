@@ -1,17 +1,19 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native"
+import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FIcon from 'react-native-vector-icons/Feather';
 import Colors from "../styles/Colors";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../context/AuthContext";
 
 
 
 const Profile = () => {
     const navigation = useNavigation();
     const [userDetails, setUserDetails] = useState([]);
+    const { userLogOut } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -21,10 +23,30 @@ const Profile = () => {
         fetchUserDetails();
     }, []);
 
+    const showAlert = () => {
+        Alert.alert("Alert!", "You want to Log Out?", [
+            {
+                text: "No",
+                onPress: () => { },
+                style: "cancel"
+            },
+            {
+                text: "Yes",
+                onPress: () => { logOut(); },
+                style: "default"
+            }
+        ]);
+    }
+
+    const logOut = () => {
+        // AsyncStorage.clear();
+        userLogOut();
+    }
+
     return (
         <View style={styles.mainContainer}>
             <View style={{ flexDirection: 'row', marginHorizontal: 15, marginTop: 10 }}>
-                <Pressable onPress={() => { navigation.goBack()}}><Icon size={25} name="arrow-back" style={styles.iconStyle} /></Pressable>
+                <Pressable onPress={() => { navigation.goBack() }}><Icon size={25} name="arrow-back" style={styles.iconStyle} /></Pressable>
                 <Text style={styles.textStyle}>Profile</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'center', marginStart: 20, marginTop: 20 }}>
@@ -66,7 +88,7 @@ const Profile = () => {
                     <Icon name="arrow-forward-ios" size={20} style={styles.editIcon} />
                 </Pressable>
 
-                <Pressable onPress={() => { }} style={styles.cardContainer}>
+                <Pressable onPress={() => { showAlert() }} style={styles.cardContainer}>
                     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                         <Icon name="logout" size={20} style={{ alignSelf: 'center', marginStart: 10, color: Colors.lightGrey }} />
                         <Text style={{ alignSelf: 'center', marginStart: 10, fontSize: 15, color: Colors.lightGrey, fontWeight: '600' }}>Log Out</Text>

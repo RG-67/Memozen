@@ -16,8 +16,14 @@ export const AuthProvider = ({ children }) => {
         checkLoginStatus();
     }, []);
 
+
+    const userLogOut = async () => {
+        await AsyncStorage.removeItem("userDetails");
+        setIsLoggedIn(false);
+    }
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, userLogOut }}>
             {children}
         </AuthContext.Provider>
     );
