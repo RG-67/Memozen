@@ -6,7 +6,7 @@ import { useState } from "react";
 
 
 
-const FirstScreen = ({navigation}) => {
+const FirstScreen = ({ navigation }) => {
 
     const [isVisible, setVisible] = useState(true);
 
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         bottom: 50,
         justifyContent: 'center',
         width: '100%',
-        marginHorizontal: 10, 
+        marginHorizontal: 10,
         gap: 10
     }
 });

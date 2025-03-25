@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import RegisterValidation from "../hooks/UserValidation";
 import { register } from "../redux/actions/UserActions";
+import { useNavigation } from "@react-navigation/native";
 
 
 
@@ -16,6 +17,7 @@ const Register = () => {
     const { validateRegister } = RegisterValidation();
     const [errors, setError] = useState('');
     const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const handleRegister = () => {
         const isValid = validateRegister(name, phone, email, password);
@@ -79,7 +81,13 @@ const Register = () => {
             </TouchableOpacity>
             <View style={styles.registerBtnTextContainer}>
                 <Text style={styles.questinText}>Already have an account ? </Text>
-                <Pressable><Text style={styles.registerTextBtn}>Login</Text></Pressable>
+                <Pressable onPress={() => {
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Login' }]
+                    })
+                }}>
+                    <Text style={styles.registerTextBtn}>Login</Text></Pressable>
             </View>
         </View>
     )

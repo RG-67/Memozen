@@ -6,17 +6,20 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/actions/UserActions";
 import { AuthContext } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 
 
 
-const Login = ({ navigation }) => {
+const Login = ({ }) => {
     const { setIsLoggedIn } = useContext(AuthContext);
+    const { setType } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const dispatch = useDispatch();
+    const navigation = useNavigation();
 
 
 
@@ -37,6 +40,9 @@ const Login = ({ navigation }) => {
             const result = await dispatch(login(userData));
             console.log(`LoginResult ==> ${result.message}`);
             await AsyncStorage.setItem("userDetails", JSON.stringify(result.data));
+            /* if (result?.data?.type === "Member") {
+                setType("Member");
+            } */
             setIsLoggedIn(true);
             // navigation.navigate('TabNavigator');
         } catch (error) {
@@ -78,7 +84,14 @@ const Login = ({ navigation }) => {
             </View>
             <View style={styles.registerBtnTextContainer}>
                 <Text style={styles.questinText}>Don't have an account ? </Text>
-                <Pressable><Text style={styles.registerTextBtn}>Register Now</Text></Pressable>
+                <Pressable onPress={() => {
+                    navigation.navigate('Register')
+                    /* navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Register' }]
+                    }) */
+                }}>
+                    <Text style={styles.registerTextBtn}>Register Now</Text></Pressable>
             </View>
         </View>
     )
