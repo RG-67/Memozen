@@ -14,3 +14,10 @@ export const dateConverter = (dueDate) => {
 
     return `${year}${month}${day}`;
 }
+
+export const todayDate = () => {
+    const date = new Date();
+    const day = date.getDate();
+    const month = date.toLocaleDateString('default', { month: 'long' });
+    return `${day} ${month}`;
+}
