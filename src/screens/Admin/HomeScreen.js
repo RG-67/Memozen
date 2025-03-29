@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../styles/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useRef, useState } from "react";
@@ -6,6 +6,11 @@ import { useFocusEffect } from "@react-navigation/native";
 import { todayDate } from "../../utility/Converter";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+
+const WINDOW_WIDTH = Dimensions.get('window').width;
+const GAP = 10;
+const BUTTON_WIDTH = (WINDOW_WIDTH - GAP) / 3;
+console.log(BUTTON_WIDTH);
 
 
 const today = new Date().getDate();
@@ -47,11 +52,11 @@ const HomeScreen = () => {
 
     const monthList = ({ item }) => {
         const isToday = item.day === today;
-        const isPastDate = item.day < today;
+        // const isPastDate = item.day < today;
         return (
             <Pressable onPress={() => { }}>
-                <View style={[styles.monthContainer, isToday && { backgroundColor: Colors.colorPrimary }, isPastDate && { backgroundColor: Colors.grey }]}>
-                    <View style={[styles.dot, isToday && {backgroundColor: Colors.white}]}/>
+                <View style={[styles.monthContainer, isToday && { backgroundColor: Colors.colorPrimary }/* , isPastDate && { backgroundColor: Colors.grey } */]}>
+                    <View style={[styles.dot, isToday && { backgroundColor: Colors.white }]} />
                     {/* <Text style={[styles.monthOrDay, isToday && { color: Colors.white }]}>{item.month}</Text> */}
                     <Text style={[styles.monthOrDay, isToday && { color: Colors.white }]}>{item.dayShort}</Text>
                     <Text style={[styles.day, isToday && { color: Colors.white }]}>{item.day}</Text>
@@ -105,6 +110,22 @@ const HomeScreen = () => {
                     initialScrollIndex={todayIndex !== -1 ? Math.max(todayIndex - 2, 0) : 0}
                     renderItem={monthList} />
             </View>
+
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <Text style={{ fontSize: 20, fontWeight: '800', color: Colors.charcoal, marginHorizontal: 15, marginTop: 20 }}>Activity</Text>
+                <View style={{ flexDirection: 'row', marginHorizontal: 10 }}>
+                    <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 50, marginTop: 10, backgroundColor: Colors.inProgressIcon }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.white, textAlign: 'center' }}>Create Group</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 50, marginTop: 10, backgroundColor: Colors.progressGreen }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.white, textAlign: 'center' }}>Create Task</Text>
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', borderRadius: 10, height: 50, marginHorizontal: 15, marginTop: 10, backgroundColor: Colors.progressGreen }}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.white, textAlign: 'center' }}>All Groups</Text>
+                </TouchableOpacity>
+            </View>
+
         </View>
     )
 }
