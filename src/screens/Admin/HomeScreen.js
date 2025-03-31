@@ -2,15 +2,15 @@ import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpac
 import Colors from "../../styles/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useRef, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { todayDate } from "../../utility/Converter";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const GAP = 10;
-const BUTTON_WIDTH = (WINDOW_WIDTH - GAP) / 3;
-console.log(BUTTON_WIDTH);
+const MARGIN = 15;
+const BUTTON_WIDTH = (WINDOW_WIDTH - (GAP + MARGIN)) / 2;
 
 
 const today = new Date().getDate();
@@ -41,6 +41,7 @@ const HomeScreen = () => {
     const dates = getCurrentMontheDates();
     const todayIndex = dates.findIndex(item => item.day === today);
     const flatListRef = useRef(null);
+    const navigation = useNavigation();
 
     useEffect(() => {
         if (flatListRef.current && todayIndex !== -1) {
@@ -111,18 +112,38 @@ const HomeScreen = () => {
                     renderItem={monthList} />
             </View>
 
-            <View style={{ flex: 1, justifyContent: 'center' }}>
+            <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 20, fontWeight: '800', color: Colors.charcoal, marginHorizontal: 15, marginTop: 20 }}>Activity</Text>
                 <View style={{ flexDirection: 'row', marginHorizontal: 10 }}>
-                    <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 50, marginTop: 10, backgroundColor: Colors.inProgressIcon }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.white, textAlign: 'center' }}>Create Group</Text>
+                    <TouchableOpacity onPress={() => { navigation.navigate('GroupCreateScreen') }} style={{
+                        justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 150, marginTop: 10,
+                        marginEnd: 5, borderWidth: 2, borderColor: Colors.colorPrimary
+                    }}>
+                        <View>
+                            <Image source={{ uri: 'https://w7.pngwing.com/pngs/766/205/png-transparent-computer-icons-icon-design-users-group-group-icon.png' }}
+                                style={{ height: 50, width: 50, alignSelf: 'center' }} />
+                            <Text style={{ fontWeight: 'bold', fontSize: 15, color: Colors.black, textAlign: 'center' }}>Create Group</Text>
+                        </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 50, marginTop: 10, backgroundColor: Colors.progressGreen }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.white, textAlign: 'center' }}>Create Task</Text>
+                    <TouchableOpacity onPress={() => { }} style={{
+                        justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 150, marginTop: 10,
+                        marginStart: 5, borderWidth: 2, borderColor: Colors.colorPrimary
+                    }}>
+                        <View>
+                            <Image source={{ uri: 'https://e7.pngegg.com/pngimages/185/850/png-clipart-task-computer-icons-tasks-s-angle-text-thumbnail.png' }}
+                                style={{ height: 50, width: 50, alignSelf: 'center' }} />
+                            <Text style={{ fontWeight: 'bold', fontSize: 15, color: Colors.black, textAlign: 'center' }}>Create Task</Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', borderRadius: 10, height: 50, marginHorizontal: 15, marginTop: 10, backgroundColor: Colors.progressGreen }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.white, textAlign: 'center' }}>All Groups</Text>
+                <TouchableOpacity onPress={() => { }} style={{
+                    justifyContent: 'center', borderRadius: 10, height: 50, marginHorizontal: 15, marginTop: 10,
+                    borderWidth: 2, borderColor: Colors.colorPrimary
+                }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 15, color: Colors.black, textAlign: 'center', textAlign: 'center', alignSelf: 'center' }}>All Groups</Text>
+                        <Icon name="arrow-forward" size={30} style={{ position: 'absolute', right: 10, alignSelf: 'center' }} />
+                    </View>
                 </TouchableOpacity>
             </View>
 

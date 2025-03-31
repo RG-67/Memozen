@@ -15,6 +15,7 @@ import UpdateTaskScreen from '../screens/UpdateTask';
 import UpdateNote from '../screens/UpdateNote';
 import GroupTaskScreen from '../screens/GroupTaskScreen';
 import HomeScreen from '../screens/Admin/HomeScreen';
+import GroupCreateScreen from '../screens/Admin/GroupCreate';
 
 
 
@@ -47,7 +48,10 @@ const MainNavigator = () => {
                             <Stack.Screen name='GroupTaskScreen' component={GroupTaskScreen} />
                         </>
                     ) : (
-                        <Stack.Screen name='HomeScreen' component={HomeScreen} />
+                        <>
+                            <Stack.Screen name='HomeScreen' component={HomeScreen} />
+                            <Stack.Screen name='GroupCreateScreen' component={GroupCreateScreen} />
+                        </>
                     )}
                 </Stack.Navigator>
             ) : (
