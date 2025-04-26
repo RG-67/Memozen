@@ -1,4 +1,4 @@
-import { getGroupByGroupId, getGroupByUserId } from "../../services/groupApi";
+import { getGroupByGroupId, getGroupByUserId, getGroupList } from "../../services/groupApi";
 
 
 
@@ -20,9 +20,21 @@ export const getGroupMembesrByGroupId = (groupId) => async (dispatch) => {
         dispatch({type: 'GROUP_MEMBERS_REQUEST'});
         const result = await getGroupByGroupId(groupId);
         dispatch({type: 'GROUP_MEMBER_SUCCESS', payload: result});
-        return result
+        return result;
     } catch (error) {
         dispatch({type: 'GROUP_MEMBER_FAILURE', payload: error});
+        throw error;
+    }
+}
+
+export const getGroupLists = () => async(dispatch) => {
+    try {
+        dispatch({type: 'GROUP_LIST_REQUEST'});
+        const result = await getGroupList();
+        dispatch({type: 'GROUP_LIST_SUCCESS', payload: result});
+        return result;
+    } catch (error) {
+        dispatch({type: 'GROUP_LIST_FAILURE', payload: error});
         throw error;
     }
 }

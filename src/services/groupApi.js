@@ -21,3 +21,14 @@ export const getGroupByGroupId = async(groupId) => {
         throw error.response?.data?.message || error.message || 'An error occures';
     }
 }
+
+
+export const getGroupList = async() => {
+    try {
+        const result = await api.get('/group/getGroupList');
+        return result.data;
+    } catch (error) {
+        console.error("GetGroupListErr: ", error.response?.data || error.message);
+        throw error.response?.data?.message || error.message || 'An error occured';
+    }
+}
