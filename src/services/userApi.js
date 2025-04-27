@@ -23,3 +23,13 @@ export const userLogin = async (userData) => {
         throw error.response?.data?.message || error.message || 'An error occurred';
     }
 }
+
+export const getAllUsers = async () => {
+    try {
+        const response = await api.get('/user/getAllUsers');
+        return response.data;
+    } catch (error) {
+        console.error('Error response:', error.response?.data || error.message);
+        throw error.response?.data?.message || error.message || 'An error occurred';
+    }
+}
