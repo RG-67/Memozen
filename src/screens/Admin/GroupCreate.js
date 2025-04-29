@@ -9,6 +9,7 @@ import { getGroupLists } from "../../redux/actions/GroupActions";
 import { getUsers } from "../../redux/actions/UserActions";
 import CustomCheckBox from "../../components/CustomCheckBox";
 import MComIcon from 'react-native-vector-icons/MaterialCommunityIcons'
+import CustomRadioButton from "../../components/CustomRadioButton";
 
 const NUM_COLUMNS = 2;
 const ITEM_GAP = 5;
@@ -136,6 +137,9 @@ const GroupCreateScreen = () => {
     const renderSelectedUser = ({ item }) => {
         return (
             <View style={styles.memberCard}>
+                <CustomRadioButton
+                    item={item.userid}
+                />
                 <Image source={{ uri: item.userimage === null ? 'https://storage.googleapis.com/pod_public/750/232853.jpg' : item.userimage }} style={styles.userListImage} />
                 <Text style={{ fontSize: 10, fontWeight: 'bold', color: Colors.charcoal }}>{item.userid}</Text>
                 <Text style={{ fontSize: 10, fontWeight: '500', color: Colors.charcoal }}>{item.username}</Text>
