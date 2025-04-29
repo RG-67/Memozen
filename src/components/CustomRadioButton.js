@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native"
 
 
-const CustomRadioButton = (item) => {
+const CustomRadioButton = ({ item }) => {
 
 
 
