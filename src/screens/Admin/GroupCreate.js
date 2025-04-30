@@ -1,15 +1,17 @@
-import { Alert, BackHandler, Button, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, BackHandler, Button, Dimensions, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import Colors from "../../styles/Colors";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getGroupLists } from "../../redux/actions/GroupActions";
+import { createMemberGroup, getGroupLists } from "../../redux/actions/GroupActions";
 import { getUsers } from "../../redux/actions/UserActions";
 import CustomCheckBox from "../../components/CustomCheckBox";
 import MComIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import CustomRadioButton from "../../components/CustomRadioButton";
+import { checkGroupValidation } from "../../hooks/GroupValidation";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const NUM_COLUMNS = 2;
 const ITEM_GAP = 5;
@@ -34,6 +36,9 @@ const GroupCreateScreen = () => {
     const [form, setForm] = useState(false);
     const [userId, selectedUserId] = useState([]);
     const [userList, setUserList] = useState([]);
+    const [radioSelectedUserId, setradioSelectedUserId] = useState(null);
+    const [groupImage, setGroupImage] = useState(null);
+    const [groupName, setGroupName] = useState("");
 
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -135,14 +140,16 @@ const GroupCreateScreen = () => {
     }
 
     const renderSelectedUser = ({ item }) => {
+        const selectedId = item.userid === radioSelectedUserId;
         return (
             <View style={styles.memberCard}>
-                <CustomRadioButton
-                    item={item.userid}
-                />
                 <Image source={{ uri: item.userimage === null ? 'https://storage.googleapis.com/pod_public/750/232853.jpg' : item.userimage }} style={styles.userListImage} />
                 <Text style={{ fontSize: 10, fontWeight: 'bold', color: Colors.charcoal }}>{item.userid}</Text>
                 <Text style={{ fontSize: 10, fontWeight: '500', color: Colors.charcoal }}>{item.username}</Text>
+                {/* RadioButton */}
+                <TouchableOpacity onPress={() => setradioSelectedUserId(item.userid)} style={styles.radioBtn}>
+                    <View style={{ backgroundColor: selectedId ? Colors.blue : Colors.white, width: 15, height: 15, borderRadius: 50 }} />
+                </TouchableOpacity>
             </View>
         )
     }
@@ -156,9 +163,17 @@ const GroupCreateScreen = () => {
             {
                 text: 'Done',
                 style: 'default',
-                onPress: () => setForm(true)
+                onPress: () => saveMemberList()
             }
         ])
+    }
+
+    const saveMemberList = () => {
+        if (userList.length < 2) {
+            ToastAndroid.show("Select at least two member", ToastAndroid.SHORT);
+        } else {
+            setForm(true);
+        }
     }
 
 
@@ -175,99 +190,159 @@ const GroupCreateScreen = () => {
         }
     }
 
+
+    const pickImage = async () => {
+        const options = { mediaType: 'photo', selectionLimit: 1, includeBase64: false }
+        launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log("User cancelled image picker");
+            } else if (response.error) {
+                console.log("Image error: ", response.error);
+            } else {
+                const uri = response.assets[0];
+                setGroupImage(uri);
+                console.log("Image uri: ", uri);
+            }
+        })
+    }
+
+    const createGroup = async () => {
+        const validation = checkGroupValidation(radioSelectedUserId, groupImage, groupName);
+        if (validation) {
+            try {
+                const result = await dispatch(createMemberGroup(radioSelectedUserId, groupName, userId, groupImage));
+                if (result.status === 200) {
+                    ToastAndroid.show(result?.message, ToastAndroid.SHORT);
+                } else {
+                    Alert.alert(result?.message, "", null);
+                }
+                setLayout(false);
+                setForm(false);
+            } catch (error) {
+                console.log("CreateGroupPageErr: ", error);
+            }
+        }
+    }
+
     return (
-        <View style={styles.mainContainer}>
-            {/* Header */}
-            <View style={styles.header}>
-                <Pressable onPress={() => setBackPress()}>
-                    <Icon size={25} name="arrow-back" style={{ alignself: 'center' }} />
-                </Pressable>
-                <Text style={styles.title}>
-                    {layout ? 'Create Group' : 'Group'}
-                </Text>
-            </View>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+            <View style={styles.mainContainer}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <Pressable onPress={() => setBackPress()}>
+                        <Icon size={25} name="arrow-back" style={{ alignself: 'center' }} />
+                    </Pressable>
+                    <Text style={styles.title}>
+                        {layout ? 'Create Group' : 'Group'}
+                    </Text>
+                </View>
 
-            {/* Body */}
-            {layout == false ? (
-                <>
-                    <TouchableOpacity style={styles.btnStyle} onPress={() => getAllUsers()}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <AntIcon size={25} name="addusergroup" style={{ alignself: 'center', color: Colors.orange }} />
-                            <Text style={{ ...styles.textStyle, textAlign: 'center', alignSelf: 'center', color: Colors.grOrange }}>Create Group</Text>
-                        </View>
-                        <Icon name="arrow-forward-ios" size={25} style={{ textAlignVertical: 'center', marginEnd: 5, color: Colors.orange }} />
-                    </TouchableOpacity>
+                {/* Body */}
+                {layout == false ? (
+                    <>
+                        <TouchableOpacity style={styles.btnStyle} onPress={() => getAllUsers()}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <AntIcon size={25} name="addusergroup" style={{ alignself: 'center', color: Colors.orange }} />
+                                <Text style={{ ...styles.textStyle, textAlign: 'center', alignSelf: 'center', color: Colors.grOrange }}>Create Group</Text>
+                            </View>
+                            <Icon name="arrow-forward-ios" size={25} style={{ textAlignVertical: 'center', marginEnd: 5, color: Colors.orange }} />
+                        </TouchableOpacity>
 
-                    <Text style={{ ...styles.textStyle, marginStart: 20, marginTop: 20 }}>Group List</Text>
-                    <FlatList
-                        data={groupList}
-                        keyExtractor={(item) => item?.groupId?.toString()}
-                        numColumns={NUM_COLUMNS}
-                        contentContainerStyle={{ paddingHorizontal: ITEM_GAP, paddingVertical: ITEM_GAP }}
-                        columnWrapperStyle={{ justifyContent: 'space-between' }}
-                        renderItem={renderGroupList}
-                    />
-                </>
-            ) : (
-                <>
-                    <View style={styles.mainContainer}>
-                        {!form ? (
-                            memberList.length > 0 ? (
-                                <>
-                                    <Text style={{ ...styles.textStyle, marginTop: 10, marginHorizontal: 10, backgroundColor: Colors.orange, padding: 5, color: Colors.white }}>Member List</Text>
-                                    <FlatList
-                                        data={memberList}
-                                        numColumns={NUM_COLUMNS2}
-                                        keyExtractor={(item) => item?.userid}
-                                        renderItem={renderMemberList}
-                                        style={{ marginTop: 5 }}
-                                    />
-                                    <TouchableOpacity style={{ marginHorizontal: 10, marginBottom: 10, backgroundColor: Colors.blue, height: 40, justifyContent: 'center', alignItems: 'center' }}
-                                        onPress={() => setFormView()}>
-                                        <Text style={{ color: Colors.white, fontWeight: 'bold', fontSize: 15 }}>Save</Text>
-                                    </TouchableOpacity>
-                                </>
+                        <Text style={{ ...styles.textStyle, marginStart: 20, marginTop: 20 }}>Group List</Text>
+                        <FlatList
+                            data={groupList}
+                            keyExtractor={(item) => item?.groupId?.toString()}
+                            numColumns={NUM_COLUMNS}
+                            contentContainerStyle={{ paddingHorizontal: ITEM_GAP, paddingVertical: ITEM_GAP }}
+                            columnWrapperStyle={{ justifyContent: 'space-between' }}
+                            renderItem={renderGroupList}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <View style={styles.mainContainer}>
+                            {!form ? (
+                                memberList.length > 0 ? (
+                                    <>
+                                        <Text style={{ ...styles.textStyle, marginTop: 10, marginHorizontal: 10, backgroundColor: Colors.orange, padding: 5, color: Colors.white }}>Member List</Text>
+                                        <FlatList
+                                            data={memberList}
+                                            numColumns={NUM_COLUMNS2}
+                                            keyExtractor={(item) => item?.userid}
+                                            renderItem={renderMemberList}
+                                            style={{ marginTop: 5 }}
+                                        />
+                                        <TouchableOpacity style={{ marginHorizontal: 10, marginBottom: 10, backgroundColor: Colors.blue, height: 40, justifyContent: 'center', alignItems: 'center' }}
+                                            onPress={() => setFormView()}>
+                                            <Text style={{ color: Colors.white, fontWeight: 'bold', fontSize: 15 }}>Save</Text>
+                                        </TouchableOpacity>
+                                    </>
+                                ) : (
+                                    <>
+                                        <View style={{ ...styles.mainContainer, justifyContent: 'center' }}>
+                                            <Text style={{ ...styles.textStyle, alignSelf: 'center' }}>Member Not Found!</Text>
+                                        </View>
+                                    </>
+                                )
                             ) : (
                                 <>
-                                    <View>
-                                        <Text>Member Not Found!</Text>
+                                    <View style={styles.mainContainer}>
+                                        <Text style={{ ...styles.lavelText, marginHorizontal: 10, marginTop: 10, backgroundColor: Colors.orange, padding: 5 }}>{userList.length} Member Selected</Text>
+                                        <Text style={{ marginTop: 5, marginHorizontal: 10, color: Colors.black, fontWeight: 'bold', fontSize: 16 }}>Select Group Lead -</Text>
+                                        <FlatList
+                                            data={userList}
+                                            keyExtractor={(item) => item.userid}
+                                            numColumns={5}
+                                            renderItem={renderSelectedUser}
+                                            style={{ marginTop: 10, maxHeight: 180 }}
+                                        />
+                                        <Text style={{ marginTop: 5, marginHorizontal: 10, color: Colors.black, fontWeight: 'bold', fontSize: 16 }}>Select Group Image -</Text>
+                                        <TouchableOpacity style={{
+                                            marginHorizontal: 10, marginTop: 5, marginBottom: 10, borderRadius: 10, backgroundColor: Colors.noteBgHeader1,
+                                            height: 180, justifyContent: 'center', alignItems: 'center', overflow: 'hidden'
+                                        }}
+                                            onPress={pickImage}>
+                                            {groupImage ? (
+                                                <>
+                                                    <Image style={{ borderRadius: 10, height: 180, width: "100%", resizeMode: 'stretch' }}
+                                                        source={{ uri: groupImage.uri }}
+                                                        // resizeMode="cover"
+                                                    />
+                                                    <MComIcon name="file-image-plus-outline" size={100} style={{ textAlign: 'center', color: Colors.white, position: 'absolute' }} />
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <MComIcon name="file-image-plus-outline" size={100} style={{ textAlign: 'center', color: Colors.noteBg1, alignSelf: 'center' }} />
+                                                </>
+                                            )}
+                                        </TouchableOpacity>
+                                        <TextInput
+                                            placeholder="Enter group name"
+                                            keyboardType="default"
+                                            multiline={false}
+                                            value={groupName}
+                                            onChangeText={setGroupName}
+                                            style={{ marginHorizontal: 10, borderWidth: 1, borderRadius: 5, height: 40, padding: 5 }}
+                                        />
+                                        <TouchableOpacity style={{ backgroundColor: Colors.blue, height: 40, justifyContent: 'center', alignItems: 'center', position: 'absolute', bottom: 10, start: 10, end: 10 }}
+                                            onPress={() => createGroup()}
+                                        >
+                                            <Text style={{ color: Colors.white, fontWeight: 'bold', fontSize: 15 }}>Submit</Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </>
-                            )
-                        ) : (
-                            <>
-                                <View style={styles.mainContainer}>
-                                    <Text style={{ ...styles.lavelText, marginHorizontal: 10, marginTop: 10, backgroundColor: Colors.orange, padding: 5 }}>{userList.length} Member Selected</Text>
-                                    <Text style={{ marginTop: 5, marginHorizontal: 10, color: Colors.black, fontWeight: 'bold', fontSize: 16 }}>Select Group Lead -</Text>
-                                    <FlatList
-                                        data={userList}
-                                        keyExtractor={(item) => item.userid}
-                                        numColumns={5}
-                                        renderItem={renderSelectedUser}
-                                        style={{ marginTop: 10, maxHeight: 180 }}
-                                    />
-                                    <Text style={{ marginTop: 5, marginHorizontal: 10, color: Colors.black, fontWeight: 'bold', fontSize: 16 }}>Select Group Image -</Text>
-                                    <TouchableOpacity style={{ marginHorizontal: 10, marginTop: 5, marginBottom: 10, borderRadius: 10, backgroundColor: Colors.noteBgHeader1, height: 180, justifyContent: 'center' }}>
-                                        <MComIcon name="file-image-plus-outline" size={100} style={{ textAlign: 'center', color: Colors.noteBg1 }} />
-                                    </TouchableOpacity>
-                                    <TextInput
-                                        placeholder="Enter group name"
-                                        keyboardType="default"
-                                        multiline={false}
-                                        style={{ marginHorizontal: 10, borderWidth: 1, borderRadius: 5, height: 40, padding: 5 }}
-                                    />
-                                    <TouchableOpacity style={{ backgroundColor: Colors.blue, height: 40, justifyContent: 'center', alignItems: 'center', position: 'absolute', bottom: 10, start: 10, end: 10 }}>
-                                        <Text style={{ color: Colors.white, fontWeight: 'bold', fontSize: 15 }}>Submit</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        )}
-                    </View>
-                </>
-            )}
+                            )}
+                        </View>
+                    </>
+                )
+                }
 
 
-        </View>
+            </View >
+        </KeyboardAvoidingView>
     )
 }
 
@@ -361,6 +436,20 @@ const styles = StyleSheet.create({
         resizeMode: 'stretch',
         borderRadius: 10,
         backgroundColor: Colors.inProgressIconBg2
+    },
+    radioBtn: {
+        position: 'absolute',
+        top: 5,
+        left: 5,
+        borderRadius: 50,
+        width: 20,
+        height: 20,
+        padding: 5,
+        backgroundColor: Colors.white,
+        borderWidth: 1.2,
+        borderColor: Colors.red,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })
 
