@@ -16,6 +16,8 @@ import UpdateNote from '../screens/UpdateNote';
 import GroupTaskScreen from '../screens/GroupTaskScreen';
 import HomeScreen from '../screens/Admin/HomeScreen';
 import GroupCreateScreen from '../screens/Admin/GroupCreate';
+import GlobalLoader from '../components/GlobalLoader';
+import GroupTask from '../screens/Admin/GroupTask';
 
 
 
@@ -24,12 +26,13 @@ const Stack = createNativeStackNavigator();
 
 
 const MainNavigator = () => {
-    const { isLoggedIn } = useContext(AuthContext);
-    const { isLanding } = useContext(AuthContext);
-    const { type } = useContext(AuthContext);
+    const { isLoggedIn, isLanding, type, loading } = useContext(AuthContext);
 
-    if (isLanding === null) {
-        return null;
+
+    if (loading || isLanding === null || (isLoggedIn && !type)) {
+        console.log("LoggedIn:", isLoggedIn, "Type:", type);
+        return <GlobalLoader />;
+        // return null;
     }
 
     return (
@@ -51,6 +54,7 @@ const MainNavigator = () => {
                         <>
                             <Stack.Screen name='HomeScreen' component={HomeScreen} />
                             <Stack.Screen name='GroupCreateScreen' component={GroupCreateScreen} />
+                            <Stack.Screen name='GroupTask' component={GroupTask} />
                         </>
                     )}
                 </Stack.Navigator>

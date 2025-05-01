@@ -125,7 +125,7 @@ const HomeScreen = () => {
                             <Text style={{ fontWeight: 'bold', fontSize: 15, color: Colors.black, textAlign: 'center' }}>Create Group</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { }} style={{
+                    <TouchableOpacity onPress={() => { navigation.navigate('GroupTask') }} style={{
                         justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 150, marginTop: 10,
                         marginStart: 5, borderWidth: 2, borderColor: Colors.colorPrimary
                     }}>

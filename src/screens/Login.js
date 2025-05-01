@@ -12,8 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 
 
 const Login = ({ }) => {
-    const { setIsLoggedIn } = useContext(AuthContext);
-    const { setType } = useContext(AuthContext);
+    const { setIsLoggedIn, setType } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -40,6 +39,7 @@ const Login = ({ }) => {
             const result = await dispatch(login(userData));
             console.log(`LoginResult ==> ${result.message}`);
             await AsyncStorage.setItem("userDetails", JSON.stringify(result.data));
+            result?.data?.type === "Member" ? setType("Member") : setType("Admin");
             /* if (result?.data?.type === "Member") {
                 setType("Member");
             } */

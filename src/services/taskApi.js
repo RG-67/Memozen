@@ -62,3 +62,13 @@ export const getGroupTaskPerPerson = async (taskid) => {
         throw error.response?.data || error.message;
     }
 }
+
+export const createTask = async (userData) => {
+    try {
+        const result = await api.post('task/create', userData);
+        return result.data;
+    } catch (error) {
+        console.error("CreateTaskErr: ", error.response?.data || error.message);
+        throw error.response?.data || error.message;
+    }
+}
