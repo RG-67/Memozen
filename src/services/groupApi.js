@@ -60,4 +60,15 @@ export const createGroup = async (adminId, groupName, userId, image) => {
         console.error("CreateGroupErr: ", error.response?.data || error.message);
         throw error.response?.data?.message || error.message || 'An error occured';
     }
-}   
+}
+
+
+export const getGroupTaskList = async () => {
+    try {
+        const result = await api.get('group/getGroupTaskList');
+        return result.data;
+    } catch (error) {
+        console.error("GetGroupTaskErr: ", error.response?.data || error.message);
+        throw error.response?.data?.message || error.message || 'An error occured';
+    }
+}
