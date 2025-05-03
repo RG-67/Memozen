@@ -5,7 +5,7 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getGroupMemberTask } from "../../redux/actions/GroupActions";
+import { getGroupMemberTask, getGroupTaskLists } from "../../redux/actions/GroupActions";
 
 
 
@@ -14,19 +14,36 @@ const ITEM_GAP = 10;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = (SCREEN_WIDTH - (ITEM_GAP * (NUM_COLUMNS + 1))) / NUM_COLUMNS;
 
+const priority = ["High", "Low"];
+
 
 const GroupTask = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
     const [groupTaskList, setGroupTaskList] = useState([]);
+    const [form, setForm] = useState(false);
+    const [groupIdList, setGroupIdList] = useState([]);
+    const [groupList, setGroupList] = useState([]);
 
     useEffect(() => {
         const getGroupTasks = async () => {
             try {
                 const result = await dispatch(getGroupMemberTask());
-                setGroupTaskList(result.data);
-                console.log("Tasks: ", result.data);
+                const formatDate = (dateStr) => {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString("en-GB", {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                }
+                const formattedTask = result.data.map(task => ({
+                    ...task,
+                    createdAt: formatDate(task.createdAt),
+                    updatedAt: formatDate(task.updatedAt)
+                }));
+                setGroupTaskList(formattedTask);
             } catch (error) {
                 console.log("GetGroupTasks: ", error);
             }
@@ -34,29 +51,45 @@ const GroupTask = () => {
         getGroupTasks();
     }, []);
 
+    const getTaskGroup = async () => {
+        try {
+            setForm(true);
+            const result = await dispatch(getGroupTaskLists());
+            const spLitSt = (group) => {
+                return group.split(" ")[0];
+            }
+            const formattedId = result.data.map(group => ({
+                ...group,
+                groupId: spLitSt(group.groupId)
+            }));
+            console.log("List1", formattedId);
+            console.log("List2", result.data);
+            setGroupIdList(formattedId);
+            setGroupList(result.data);
+        } catch (error) {
+            console.log("ResultErr: ", error);
+        }
+    }
+
+    const groupTaskCreate = async () => {
+        try {
+
+        } catch (error) {
+
+        }
+    }
+
     const groupTaskListRender = ({ item }) => {
-        const createDate = new Date(item.createdAt).toLocaleDateString("en-GB", {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        });
-
-        const updateDate = new Date(item.updatedAt).toLocaleDateString("en-GB",  {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        });
-
         return (
             <TouchableOpacity style={styles.groupTaskCard}>
                 <Image source={{ uri: item.groupImage !== "" ? item.groupImage : "https://storage.googleapis.com/pod_public/750/232853.jpg" }} style={styles.groupImage} />
                 <Text style={styles.nameText}>{item.groupName}</Text>
-                <Text style={{...styles.titleText, marginTop: 5}}>Title: {item.title}</Text>
+                <Text style={{ ...styles.titleText, marginTop: 5 }}>Title: {item.title}</Text>
                 <Text style={styles.titleText}>Description: {item.description}</Text>
                 <Text style={styles.titleText}>Priority: {item.priority}</Text>
                 <Text style={styles.titleText}>Status: {item.status}</Text>
-                <Text style={styles.titleText}>Created: {createDate}</Text>
-                <Text style={{...styles.titleText, marginBottom: 10}}>Updated: {updateDate}</Text>
+                <Text style={styles.titleText}>Created: {item.createdAt}</Text>
+                <Text style={{ ...styles.titleText, marginBottom: 10 }}>Updated: {item.updatedAt}</Text>
             </TouchableOpacity>
         )
     }
@@ -69,27 +102,35 @@ const GroupTask = () => {
                     <Icon size={25} name="arrow-back" style={{ alignself: 'center' }} />
                 </Pressable>
                 <Text style={styles.title}>
-                    Group Taks
+                    {form ? 'Create Group Task' : 'Group Taks'}
                 </Text>
             </View>
 
             {/* Body */}
-            <TouchableOpacity style={styles.btnStyle} onPress={() => { }}>
-                <View style={{ flexDirection: 'row' }}>
-                    <AntIcon size={25} name="addusergroup" style={{ alignself: 'center', color: Colors.grGreen }} />
-                    <Text style={{ ...styles.textStyle, textAlign: 'center', alignSelf: 'center', color: Colors.grGreen }}>Create Group Task</Text>
-                </View>
-                <Icon name="arrow-forward-ios" size={25} style={{ textAlignVertical: 'center', marginEnd: 5, color: Colors.grGreen }} />
-            </TouchableOpacity>
+            {!form ? (
+                <>
+                    <TouchableOpacity style={styles.btnStyle} onPress={() => { getTaskGroup() }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <AntIcon size={25} name="addusergroup" style={{ alignself: 'center', color: Colors.grGreen }} />
+                            <Text style={{ ...styles.textStyle, textAlign: 'center', alignSelf: 'center', color: Colors.grGreen }}>Create Group Task</Text>
+                        </View>
+                        <Icon name="arrow-forward-ios" size={25} style={{ textAlignVertical: 'center', marginEnd: 5, color: Colors.grGreen }} />
+                    </TouchableOpacity>
 
-            <FlatList
-                data={groupTaskList}
-                keyExtractor={(item) => item.taskid}
-                numColumns={NUM_COLUMNS}
-                columnWrapperStyle={{ paddingHorizontal: 5, paddingVertical: 5 }}
-                renderItem={groupTaskListRender}
-                style={{marginVertical: 10}}
-            />
+                    <FlatList
+                        data={groupTaskList}
+                        keyExtractor={(item) => item.taskid}
+                        numColumns={NUM_COLUMNS}
+                        columnWrapperStyle={{ paddingHorizontal: 5, paddingVertical: 5 }}
+                        renderItem={groupTaskListRender}
+                        style={{ marginVertical: 10 }}
+                    />
+                </>
+            ) : (
+                <View style={styles.mainContainer}>
+
+                </View>
+            )}
 
         </View>
     )

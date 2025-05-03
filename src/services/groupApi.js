@@ -72,3 +72,14 @@ export const getGroupTaskList = async () => {
         throw error.response?.data?.message || error.message || 'An error occured';
     }
 }
+
+
+export const getTaskGroupList = async () => {
+    try {
+        const result = await api.get('group/getTaskGroupList');
+        return result.data;
+    } catch (error) {
+        console.error("GettaskGroupListErr: ", error.response?.data || error.message);
+        throw error.response?.data?.message || error.message || 'An error occured';
+    }
+}
