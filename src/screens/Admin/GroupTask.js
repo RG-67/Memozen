@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Colors from "../../styles/Colors";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { getGroupMemberTask, getGroupTaskLists } from "../../redux/actions/GroupActions";
+import { Picker } from "@react-native-picker/picker";
 
 
 
@@ -13,6 +14,10 @@ const NUM_COLUMNS = 2;
 const ITEM_GAP = 10;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = (SCREEN_WIDTH - (ITEM_GAP * (NUM_COLUMNS + 1))) / NUM_COLUMNS;
+
+const MARGIN_HORINTAL = 20
+const GAP_BETWEEN_TEXT_INPUT = 5
+const ROW_TEXT_INPUT_WIDTH = (SCREEN_WIDTH - ((MARGIN_HORINTAL * 2) + GAP_BETWEEN_TEXT_INPUT)) / 2;
 
 const priority = ["High", "Low"];
 
@@ -25,6 +30,7 @@ const GroupTask = () => {
     const [form, setForm] = useState(false);
     const [groupIdList, setGroupIdList] = useState([]);
     const [groupList, setGroupList] = useState([]);
+    const [groupTask, setGroupTask] = useState({});
 
     useEffect(() => {
         const getGroupTasks = async () => {
@@ -128,6 +134,76 @@ const GroupTask = () => {
                 </>
             ) : (
                 <View style={styles.mainContainer}>
+                    <Text style={{ ...styles.text, marginTop: 20 }}>Title *</Text>
+                    <TextInput
+                        placeholder="Title"
+                        multiline={false}
+                        value={groupTask.title || ''}
+                        onChangeText={(text) => setGroupTask({ ...groupTask, title: text })}
+                        style={{ ...styles.textFormInput, height: 45, marginTop: 5, fontSize: 15, fontWeight: '500', color: Colors.black }}
+                    />
+                    <Text style={{ ...styles.text, marginTop: 10 }}>Description *</Text>
+                    <TextInput
+                        placeholder="Description"
+                        multiline={true}
+                        value={groupTask.description || ''}
+                        onChangeText={(text) => setGroupTask({ ...groupTask, description: text })}
+                        style={{ ...styles.textFormInput, height: 200, marginTop: 5, fontSize: 15, fontWeight: '400', color: Colors.black, textAlignVertical: 'top' }}
+                    />
+                    <View style={{ flexDirection: 'row', marginHorizontal: MARGIN_HORINTAL, marginTop: 10 }}>
+                        <View>
+                            <Text style={{ marginHorizontal: 5, marginBottom: 5, fontSize: 14, fontWeight: 'bold' }}>Deadline *</Text>
+                            <Pressable onPress={() => { }}>
+                                <TextInput
+                                    placeholder="x/xx/XXXX"
+                                    multiline={false}
+                                    editable={false}
+                                    value={groupTask.deadline || ''}
+                                    onChangeText={(text) => setGroupTask({ ...groupTask, description: text })}
+                                    style={{
+                                        height: 45, width: ROW_TEXT_INPUT_WIDTH, fontSize: 15, fontWeight: '400', color: Colors.black,
+                                        borderRadius: 10, backgroundColor: Colors.grey, padding: 10, marginEnd: GAP_BETWEEN_TEXT_INPUT
+                                    }}
+                                />
+                            </Pressable>
+                        </View>
+                        <View>
+                            <Text style={{ marginHorizontal: 5, marginBottom: 5, fontSize: 14, fontWeight: 'bold' }}>Priority *</Text>
+                            {/* <Pressable onPress={() => { }}>
+                                <TextInput
+                                    placeholder="x/xx/XXXX"
+                                    multiline={false}
+                                    editable={false}
+                                    value={groupTask.priority || ''}
+                                    onChangeText={(text) => setGroupTask({ ...groupTask, priority: text })}
+                                    style={{
+                                        height: 45, width: ROW_TEXT_INPUT_WIDTH, fontSize: 15, fontWeight: '400', color: Colors.black,
+                                        borderRadius: 10, backgroundColor: Colors.grey, padding: 10, marginEnd: GAP_BETWEEN_TEXT_INPUT
+                                    }}
+                                />
+                            </Pressable> */}
+                            <View style={{
+                                height: 45, width: ROW_TEXT_INPUT_WIDTH, fontSize: 15,
+                                borderRadius: 10, backgroundColor: Colors.grey, padding: 10, marginEnd: GAP_BETWEEN_TEXT_INPUT, justifyContent: 'center'
+                            }}>
+                                <Picker selectedValue={groupTask.priority} onValueChange={(text) => setGroupTask({ ...groupTask, priority: text })}
+                                    style={styles.picker}>
+                                    <Picker.Item label="High" value="High" />
+                                    <Picker.Item label="Low" value="Low" />
+                                </Picker>
+                            </View>
+
+                        </View>
+                    </View>
+
+                    <Text style={{ ...styles.text, marginTop: 10 }}>Group ID *</Text>
+                    <TextInput
+                        placeholder="----- Select Group ID -----"
+                        multiline={true}
+                        value={groupTask.groupId || ''}
+                        onChangeText={(text) => setGroupTask({ ...groupTask, groupId: text })}
+                        style={{ ...styles.textFormInput, height: 45, marginTop: 5, fontSize: 15, fontWeight: '400', color: Colors.black, textAlignVertical: 'top' }}
+                    />
 
                 </View>
             )}
@@ -205,6 +281,23 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         marginHorizontal: 5,
         fontSize: 12
+    },
+    textFormInput: {
+        marginHorizontal: 20,
+        borderRadius: 10,
+        backgroundColor: Colors.grey,
+        padding: 10
+    },
+    text: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginHorizontal: 25,
+        // textDecorationLine: 'underline'
+    },
+    picker: {
+        fontWeight: 'bold', 
+        color: Colors.black,
+        fontSize: 15
     }
 });
 
