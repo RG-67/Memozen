@@ -11,3 +11,20 @@ export const checkGroupValidation = (radioSelected, image, name) => {
     }
     return true;
 }
+
+
+
+export const checkGroupTaskValidation = (taskData) => {
+    if (!taskData.title?.trim()) {
+        return ToastAndroid.show("Enter title", ToastAndroid.SHORT);
+    } else if (!taskData.description?.trim()) {
+        return ToastAndroid.show("Enter description", ToastAndroid.SHORT);
+    } else if (!taskData.deadline || !(taskData.deadline instanceof Date)) {
+        return ToastAndroid.show("Select deadline", ToastAndroid.SHORT);
+    } else if (!taskData.priority?.trim()) {
+        return ToastAndroid.show("Select priority", ToastAndroid.SHORT);
+    } else if (!taskData.groupId?.trim()) {
+        return ToastAndroid.show("Group ID should not be empty", ToastAndroid.SHORT);
+    }
+    return true;
+};

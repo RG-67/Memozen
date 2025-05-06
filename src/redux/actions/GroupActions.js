@@ -1,4 +1,4 @@
-import { createGroup, getGroupByGroupId, getGroupByUserId, getGroupList, getGroupTaskList, getTaskGroupList } from "../../services/groupApi";
+import { createGroup, createGroupTask, getGroupByGroupId, getGroupByUserId, getGroupList, getGroupTaskList, getTaskGroupList } from "../../services/groupApi";
 
 
 
@@ -73,6 +73,18 @@ export const getGroupTaskLists = () => async (dispatch) => {
         return result;
     } catch (error) {
         dispatch({ type: 'GROUP_TASKS_FAILURE', payload: error });
+        throw error;
+    }
+}
+
+export const createGroupTaskByAdmin = (groupTaskData) => async (dispatch) => {
+    try {
+        dispatch({ type: 'CREATE_TASKS_REQUEST' });
+        const result = await createGroupTask(groupTaskData);
+        dispatch({ type: 'CREATE_TASKS_SUCCESS', payload: result });
+        return result;
+    } catch (error) {
+        dispatch({ type: 'CREATE_TASKS_FAILURE', payload: error });
         throw error;
     }
 }

@@ -83,3 +83,13 @@ export const getTaskGroupList = async () => {
         throw error.response?.data?.message || error.message || 'An error occured';
     }
 }
+
+export const createGroupTask = async (groupTaskData) => {
+    try {
+        const result = await api.post('group/createGroupTask', groupTaskData);
+        return result.data;
+    } catch (error) {
+        console.error("CreateGroupTaskErr: ", error.response?.data || error.message);
+        throw error.response?.data?.message || error.message || 'An error occured';
+    }
+}

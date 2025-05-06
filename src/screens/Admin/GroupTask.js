@@ -1,12 +1,15 @@
-import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native"
 import Colors from "../../styles/Colors";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getGroupMemberTask, getGroupTaskLists } from "../../redux/actions/GroupActions";
+import { createGroupTaskByAdmin, getGroupMemberTask, getGroupTaskLists } from "../../redux/actions/GroupActions";
 import { Picker } from "@react-native-picker/picker";
+import { dateFormatForSend, formatDate, todayDateFormat } from "../../utility/Converter";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import { checkGroupTaskValidation } from "../../hooks/GroupValidation";
 
 
 
@@ -19,8 +22,6 @@ const MARGIN_HORINTAL = 20
 const GAP_BETWEEN_TEXT_INPUT = 5
 const ROW_TEXT_INPUT_WIDTH = (SCREEN_WIDTH - ((MARGIN_HORINTAL * 2) + GAP_BETWEEN_TEXT_INPUT)) / 2;
 
-const priority = ["High", "Low"];
-
 
 const GroupTask = () => {
     const navigation = useNavigation();
@@ -28,7 +29,6 @@ const GroupTask = () => {
 
     const [groupTaskList, setGroupTaskList] = useState([]);
     const [form, setForm] = useState(false);
-    const [groupIdList, setGroupIdList] = useState([]);
     const [groupList, setGroupList] = useState([]);
     const [groupTask, setGroupTask] = useState({});
 
@@ -60,28 +60,52 @@ const GroupTask = () => {
     const getTaskGroup = async () => {
         try {
             setForm(true);
-            const result = await dispatch(getGroupTaskLists());
-            const spLitSt = (group) => {
-                return group.split(" ")[0];
-            }
-            const formattedId = result.data.map(group => ({
-                ...group,
-                groupId: spLitSt(group.groupId)
+            setGroupTask(prev => ({
+                ...prev,
+                deadline: new Date()/* todayDateFormat() */
             }));
-            console.log("List1", formattedId);
-            console.log("List2", result.data);
-            setGroupIdList(formattedId);
+            const result = await dispatch(getGroupTaskLists());
             setGroupList(result.data);
         } catch (error) {
             console.log("ResultErr: ", error);
         }
     }
 
-    const groupTaskCreate = async () => {
+    const setDate = () => {
+        DateTimePickerAndroid.open({
+            value: groupTask.deadline || new Date(),
+            mode: 'date',
+            display: 'default',
+            onChange: (event, selectedDate) => {
+                if (event.type === "set" && selectedDate) {
+                    console.log("DATE: ", selectedDate);
+                    setGroupTask(prev => ({
+                        ...prev,
+                        deadline: selectedDate
+                    }));
+                }
+            }
+        })
+    }
+
+    const createGroupTask = async () => {
         try {
-
+            const check = checkGroupTaskValidation(groupTask);
+            if (check) {
+                const taskData = {
+                    ...groupTask,
+                    deadline: dateFormatForSend(groupTask.deadline),
+                    groupId: groupTask.groupId.split(" ")[0],
+                    category: "Official",
+                    status: "Pending",
+                    percentage: "0"
+                }
+                const result = await dispatch(createGroupTaskByAdmin(taskData));
+                ToastAndroid.show(result.message, ToastAndroid.SHORT);
+                setForm(false);
+            }
         } catch (error) {
-
+            console.log("CreateGroupTaskErr: ", error);
         }
     }
 
@@ -153,13 +177,13 @@ const GroupTask = () => {
                     <View style={{ flexDirection: 'row', marginHorizontal: MARGIN_HORINTAL, marginTop: 10 }}>
                         <View>
                             <Text style={{ marginHorizontal: 5, marginBottom: 5, fontSize: 14, fontWeight: 'bold' }}>Deadline *</Text>
-                            <Pressable onPress={() => { }}>
+                            <Pressable onPress={() => { setDate() }}>
                                 <TextInput
                                     placeholder="x/xx/XXXX"
                                     multiline={false}
                                     editable={false}
-                                    value={groupTask.deadline || ''}
-                                    onChangeText={(text) => setGroupTask({ ...groupTask, description: text })}
+                                    value={groupTask.deadline ? formatDate(groupTask.deadline) : ''}
+                                    onChangeText={(text) => setGroupTask({ ...groupTask, deadline: text })}
                                     style={{
                                         height: 45, width: ROW_TEXT_INPUT_WIDTH, fontSize: 15, fontWeight: '400', color: Colors.black,
                                         borderRadius: 10, backgroundColor: Colors.grey, padding: 10, marginEnd: GAP_BETWEEN_TEXT_INPUT
@@ -188,6 +212,7 @@ const GroupTask = () => {
                             }}>
                                 <Picker selectedValue={groupTask.priority} onValueChange={(text) => setGroupTask({ ...groupTask, priority: text })}
                                     style={styles.picker}>
+                                    <Picker.Item label="----- Select Priority -----" value="" />
                                     <Picker.Item label="High" value="High" />
                                     <Picker.Item label="Low" value="Low" />
                                 </Picker>
@@ -197,13 +222,29 @@ const GroupTask = () => {
                     </View>
 
                     <Text style={{ ...styles.text, marginTop: 10 }}>Group ID *</Text>
-                    <TextInput
-                        placeholder="----- Select Group ID -----"
-                        multiline={true}
-                        value={groupTask.groupId || ''}
-                        onChangeText={(text) => setGroupTask({ ...groupTask, groupId: text })}
-                        style={{ ...styles.textFormInput, height: 45, marginTop: 5, fontSize: 15, fontWeight: '400', color: Colors.black, textAlignVertical: 'top' }}
-                    />
+                    <View style={{ ...styles.textFormInput, height: 45, marginTop: 5, fontSize: 15, fontWeight: '400', color: Colors.black, textAlignVertical: 'top', justifyContent: 'center' }}>
+                        {/* <TextInput
+                            placeholder="----- Select Group ID -----"
+                            multiline={true}
+                            value={groupTask.groupId || ''}
+                            onChangeText={(text) => setGroupTask({ ...groupTask, groupId: text })}
+                            
+                        /> */}
+                        <Picker
+                            selectedValue={groupTask.groupId || ''}
+                            onValueChange={(itemValue, itemIndex) => setGroupTask(prev => ({ ...prev, groupId: itemValue }))}
+                        >
+                            <Picker.Item label="----- Select Group ID -----" value="" />
+                            {groupList.map((item, index) => (
+                                <Picker.Item key={index} label={item.groupId} value={item.groupId} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <TouchableOpacity style={{ backgroundColor: Colors.blue, height: 40, justifyContent: 'center', alignItems: 'center', position: 'absolute', bottom: 10, start: 10, end: 10 }}
+                        onPress={() => createGroupTask()}
+                    >
+                        <Text style={{ color: Colors.white, fontWeight: 'bold', fontSize: 15 }}>Submit</Text>
+                    </TouchableOpacity>
 
                 </View>
             )}
@@ -295,7 +336,7 @@ const styles = StyleSheet.create({
         // textDecorationLine: 'underline'
     },
     picker: {
-        fontWeight: 'bold', 
+        fontWeight: 'bold',
         color: Colors.black,
         fontSize: 15
     }
