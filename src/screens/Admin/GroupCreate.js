@@ -52,7 +52,7 @@ const GroupCreateScreen = () => {
         }
         const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
         return () => backHandler.remove();
-    })
+    }, [])
 
     useFocusEffect(
         useCallback(() => {

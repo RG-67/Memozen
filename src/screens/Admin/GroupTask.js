@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native"
+import { BackHandler, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native"
 import Colors from "../../styles/Colors";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -31,6 +31,17 @@ const GroupTask = () => {
     const [form, setForm] = useState(false);
     const [groupList, setGroupList] = useState([]);
     const [groupTask, setGroupTask] = useState({});
+
+    useEffect(() => {
+        const backAction = () => {
+            if (navigation.canGoBack()) {
+                onBackPress();
+            }
+            return true;
+        }
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+        return () => backHandler.remove();
+    }, []);
 
     useEffect(() => {
         const getGroupTasks = async () => {
@@ -109,13 +120,26 @@ const GroupTask = () => {
         }
     }
 
+    const onBackPress = () => {
+        if (!form) {
+            setGroupTaskList([]);
+            setGroupList([]);
+            setGroupTask({});
+            setTimeout(() => {
+                navigation.goBack();
+            }, 100);
+        } else {
+            setForm(false);
+        }
+    }
+
     const groupTaskListRender = ({ item }) => {
         return (
             <TouchableOpacity style={styles.groupTaskCard}>
                 <Image source={{ uri: item.groupImage !== "" ? item.groupImage : "https://storage.googleapis.com/pod_public/750/232853.jpg" }} style={styles.groupImage} />
                 <Text style={styles.nameText}>{item.groupName}</Text>
                 <Text style={{ ...styles.titleText, marginTop: 5 }}>Title: {item.title}</Text>
-                <Text style={styles.titleText}>Description: {item.description}</Text>
+                <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">Description: {item.description}</Text>
                 <Text style={styles.titleText}>Priority: {item.priority}</Text>
                 <Text style={styles.titleText}>Status: {item.status}</Text>
                 <Text style={styles.titleText}>Created: {item.createdAt}</Text>
@@ -128,7 +152,7 @@ const GroupTask = () => {
         <View style={styles.mainContainer}>
             {/* Header */}
             <View style={styles.header}>
-                <Pressable onPress={() => { navigation.goBack() }}>
+                <Pressable onPress={() => { onBackPress() }}>
                     <Icon size={25} name="arrow-back" style={{ alignself: 'center' }} />
                 </Pressable>
                 <Text style={styles.title}>
