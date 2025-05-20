@@ -114,10 +114,19 @@ const HomeScreen = () => {
 
             <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 20, fontWeight: '800', color: Colors.charcoal, marginHorizontal: 15, marginTop: 20 }}>Activity</Text>
+                <TouchableOpacity onPress={() => { }} style={{
+                    justifyContent: 'center', borderRadius: 10, height: 50, marginHorizontal: 10, marginTop: 10, elevation: 5, backgroundColor: Colors.white,
+                    borderWidth: 1
+                }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 15, color: Colors.black, textAlign: 'center', textAlign: 'center', alignSelf: 'center' }}>All Groups</Text>
+                        <Icon name="arrow-forward" size={30} style={{ position: 'absolute', right: 10, alignSelf: 'center' }} />
+                    </View>
+                </TouchableOpacity>
                 <View style={{ flexDirection: 'row', marginHorizontal: 10 }}>
                     <TouchableOpacity onPress={() => { navigation.navigate('GroupCreateScreen') }} style={{
                         justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 150, marginTop: 10,
-                        marginEnd: 5, borderWidth: 2, borderColor: Colors.colorPrimary
+                        marginEnd: 5, elevation: 5, backgroundColor: Colors.white, borderWidth: 1
                     }}>
                         <View>
                             <Image source={{ uri: 'https://w7.pngwing.com/pngs/766/205/png-transparent-computer-icons-icon-design-users-group-group-icon.png' }}
@@ -127,7 +136,7 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { navigation.navigate('GroupTask') }} style={{
                         justifyContent: 'center', borderRadius: 10, width: BUTTON_WIDTH, height: 150, marginTop: 10,
-                        marginStart: 5, borderWidth: 2, borderColor: Colors.colorPrimary
+                        marginStart: 5, elevation: 5, backgroundColor: Colors.white, borderWidth: 1
                     }}>
                         <View>
                             <Image source={{ uri: 'https://e7.pngegg.com/pngimages/185/850/png-clipart-task-computer-icons-tasks-s-angle-text-thumbnail.png' }}
@@ -136,15 +145,6 @@ const HomeScreen = () => {
                         </View>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={() => { }} style={{
-                    justifyContent: 'center', borderRadius: 10, height: 50, marginHorizontal: 15, marginTop: 10,
-                    borderWidth: 2, borderColor: Colors.colorPrimary
-                }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15, color: Colors.black, textAlign: 'center', textAlign: 'center', alignSelf: 'center' }}>All Groups</Text>
-                        <Icon name="arrow-forward" size={30} style={{ position: 'absolute', right: 10, alignSelf: 'center' }} />
-                    </View>
-                </TouchableOpacity>
             </View>
 
         </View>
